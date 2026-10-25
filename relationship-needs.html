@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="用20道题，发现你在亲密关系中最需要什么。" />
+  <meta name="description" content="用20个关系情境，梳理你在亲密关系中的核心需求与沟通方式。" />
   <title>你在亲密关系中最需要什么？</title>
   <style>
 :root {
@@ -72,6 +72,8 @@ h1 em { font-style: normal; color: var(--rose); }
 .question-card { min-height: 470px; padding: clamp(26px, 6vw, 56px); border-radius: 32px; background: rgba(255,250,246,.82); border: 1px solid rgba(255,255,255,.9); box-shadow: var(--shadow); backdrop-filter: blur(16px); }
 .question-number { color: var(--rose-dark); font-size: 12px; font-weight: 800; letter-spacing: .15em; }
 .question-card h2 { max-width: 680px; margin: 16px 0 30px; font-family: Georgia, "Songti SC", serif; font-size: clamp(26px, 4vw, 38px); line-height: 1.4; }
+.question-hint { display: none; margin: -18px 0 24px; color: var(--rose-dark); font-size: 13px; font-weight: 700; }
+.question-hint.show { display: block; }
 .options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .option { display: flex; align-items: center; gap: 14px; min-height: 68px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.72); color: var(--ink); text-align: left; cursor: pointer; transition: .2s ease; }
 .option:hover { transform: translateY(-2px); border-color: rgba(239,109,117,.45); box-shadow: 0 8px 20px rgba(80,48,62,.08); }
@@ -84,6 +86,21 @@ h1 em { font-style: normal; color: var(--rose); }
 .result-screen { padding-top: 58px; text-align: center; }
 .result-screen h1 { margin: 18px 0 10px; color: var(--rose-dark); }
 .result-subtitle { max-width: 620px; margin: 0 auto 34px; color: var(--muted); font-size: 17px; line-height: 1.7; }
+.ranking-card { max-width: 720px; margin: 0 auto 20px; padding: 26px; text-align: left; background: rgba(255,250,246,.86); border: 1px solid white; border-radius: 28px; box-shadow: 0 15px 40px rgba(95,61,72,.1); }
+.rank-row { display: grid; grid-template-columns: 42px minmax(80px,140px) 1fr; align-items: center; gap: 14px; margin: 13px 0; }
+.rank-number { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 12px; color: white; background: var(--ink); font-family: Georgia,serif; font-weight: 800; }
+.rank-row:first-child .rank-number { background: var(--rose); }
+.rank-name strong { display: block; font-size: 15px; }
+.rank-name small { color: var(--muted); }
+.rank-track { height: 9px; overflow: hidden; border-radius: 99px; background: #eee5e2; }
+.rank-track i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,var(--rose),var(--peach)); }
+.report-stack { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; text-align: left; }
+.report-stack article { padding: 28px; background: rgba(255,250,246,.84); border: 1px solid white; border-radius: 26px; box-shadow: 0 15px 40px rgba(95,61,72,.08); }
+.report-stack article span { display: block; margin-bottom: 14px; color: var(--rose-dark); font-size: 12px; font-weight: 800; letter-spacing: .1em; }
+.report-stack p { margin: 0; color: #5f535d; line-height: 1.95; white-space: pre-line; }
+.report-stack .wide { grid-column: 1/-1; background: var(--ink); }
+.report-stack .wide span { color: var(--peach); }
+.report-stack .wide p { color: #fff9f5; }
 .result-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; text-align: left; }
 .chart-card, .insight-card, .advice-grid article { background: rgba(255,250,246,.82); border: 1px solid white; border-radius: 26px; box-shadow: 0 15px 40px rgba(95,61,72,.09); }
 .chart-card { display: flex; align-items: center; gap: 28px; padding: 28px; }
@@ -111,13 +128,15 @@ h1 em { font-style: normal; color: var(--rose); }
 @media (max-width: 680px) {
   .shell { width: min(100% - 22px, 900px); padding-top: 18px; }
   .start-screen { padding-top: 45px; }
-  .options, .result-grid, .advice-grid { grid-template-columns: 1fr; }
+  .options, .result-grid, .advice-grid, .report-stack { grid-template-columns: 1fr; }
   .question-card { min-height: 0; padding: 26px 18px; border-radius: 25px; }
   .question-card h2 { min-height: 78px; margin-bottom: 22px; }
   .option { min-height: 60px; }
   .chart-card { flex-direction: column; text-align: center; }
   .score-legend { width: 100%; }
   .advice-grid .wide { grid-column: auto; }
+  .report-stack .wide { grid-column: auto; }
+  .rank-row { grid-template-columns: 38px 105px 1fr; gap: 9px; }
   .result-actions { flex-direction: column-reverse; }
   .result-actions button { width: 100%; }
 }
@@ -138,9 +157,9 @@ h1 em { font-style: normal; color: var(--rose); }
     </header>
 
     <section id="startScreen" class="screen start-screen active">
-      <div class="eyebrow">20 道题 · 约 3 分钟</div>
+      <div class="eyebrow">20 个关系情境 · 约 4 分钟</div>
       <h1>亲密关系中<br><em>你最需要什么？</em></h1>
-      <p class="lead">你真正渴望的，也许不是更多的爱，而是被用你需要的方式爱着。</p>
+      <p class="lead">这不是给你贴标签，而是帮你分清：在爱里，什么最能让你安心、靠近，也最容易让你受伤。</p>
       <div class="preview-card" aria-hidden="true">
         <div class="mini-card card-back"></div>
         <div class="mini-card card-front">
@@ -163,6 +182,7 @@ h1 em { font-style: normal; color: var(--rose); }
       <article class="question-card">
         <div id="questionNumber" class="question-number">QUESTION 01</div>
         <h2 id="questionText"></h2>
+        <p id="questionHint" class="question-hint"></p>
         <div id="options" class="options" role="radiogroup" aria-label="答案选项"></div>
       </article>
       <div class="navigation">
@@ -172,25 +192,19 @@ h1 em { font-style: normal; color: var(--rose); }
     </section>
 
     <section id="resultScreen" class="screen result-screen">
-      <div class="result-kicker">你在亲密关系中最需要</div>
+      <div class="result-kicker">你的核心关系需求排序</div>
       <h1 id="resultTitle"></h1>
       <p id="resultSubtitle" class="result-subtitle"></p>
 
-      <div class="result-grid">
-        <div class="chart-card">
-          <div class="donut" id="donutChart"><div><strong id="topPercent">0%</strong><span>核心需求</span></div></div>
-          <div id="scoreLegend" class="score-legend"></div>
-        </div>
-        <div class="insight-card">
-          <span class="insight-label">关系画像</span>
-          <p id="resultDescription"></p>
-        </div>
-      </div>
+      <div id="rankingList" class="ranking-card" aria-label="需求排名"></div>
 
-      <div class="advice-grid">
-        <article><span>你如何感受爱</span><p id="resultStrength"></p></article>
-        <article><span>容易受伤的地方</span><p id="resultRisk"></p></article>
-        <article class="wide"><span>给你的关系建议</span><p id="resultAdvice"></p></article>
+      <div class="report-stack">
+        <article><span>你的整体关系画像</span><p id="resultOverview"></p></article>
+        <article><span>第一需求 · 深度解析</span><p id="resultPrimary"></p></article>
+        <article><span>第二、第三需求如何影响你</span><p id="resultSecondary"></p></article>
+        <article><span>你的需求组合与关系循环</span><p id="resultPattern"></p></article>
+        <article><span>需要留意的误区</span><p id="resultBlindSpot"></p></article>
+        <article class="wide"><span>给你的具体关系建议</span><p id="resultAdvice"></p></article>
       </div>
 
       <div class="result-actions">
@@ -201,56 +215,47 @@ h1 em { font-style: normal; color: var(--rose); }
     </section>
   </main>
   <script>
-const questions = [
-  {q:"伴侣很久没有回复消息时，你通常会：",a:[["继续等待，相信对方只是正在忙",{S:3,C:1}],["主动询问发生了什么",{C:2,U:2}],["有些生气，觉得自己没有被重视",{S:2,U:2}],["假装不在意，减少自己的主动",{M:2,S:2}]]},
-  {q:"你最喜欢怎样的约会？",a:[["精心安排、充满仪式感的约会",{S:2,C:2}],["一起散步、吃饭，长时间聊天",{U:2,M:2}],["共同尝试一件新鲜的事情",{M:3,C:1}],["即使各做各的，也能待在一起",{C:3,S:1}]]},
-  {q:"发生争执以后，你更希望对方：",a:[["明确告诉你关系不会因此结束",{S:4}],["先陪在你身边，等情绪慢慢平复",{C:3,S:1}],["认真听懂你为什么难过",{U:4}],["和你一起找到问题背后的原因",{M:3,U:1}]]},
-  {q:"哪一种礼物最容易让你感动？",a:[["你无意中提过、对方却一直记得的东西",{U:3,S:1}],["亲手准备、记录共同回忆的礼物",{C:3,M:1}],["能真正改善你生活的实用礼物",{S:2,U:2}],["一本书、一张唱片或共同体验",{M:4}]]},
-  {q:"你最希望伴侣具备哪一种能力？",a:[["说到做到，让你能够放心依靠",{S:4}],["愿意花时间稳定地陪伴你",{C:4}],["能觉察并接住你的真实情绪",{U:4}],["能够和你讨论彼此的内心世界",{M:4}]]},
-  {q:"恋爱中，你理想的联系频率是：",a:[["每天都有固定的联系和回应",{S:2,C:2}],["有空就分享日常，不必规定次数",{C:3,U:1}],["不必频繁，但重要事情一定会说",{S:3,M:1}],["比频率更重要的是聊天有深度",{M:3,U:1}]]},
-  {q:"伴侣忘记重要纪念日时，你最难受的是：",a:[["担心自己在对方心里不够重要",{S:3,U:1}],["错过了本来可以一起度过的时刻",{C:4}],["对方没有理解这一天对你的意义",{U:4}],["你们对关系仪式的看法差异太大",{M:3,U:1}]]},
-  {q:"对你来说，安全感最主要来自：",a:[["稳定承诺和清晰的未来计划",{S:4}],["需要时对方总能出现在身边",{C:3,S:1}],["情绪被认真看见而不是否定",{U:3,S:1}],["价值观一致，彼此没有精神距离",{M:3,S:1}]]},
-  {q:"伴侣情绪低落时，你最自然的做法是：",a:[["确认自己会一直陪着对方",{S:2,C:2}],["安静陪伴，照顾对方的生活",{C:4}],["询问对方此刻真正的感受",{U:4}],["陪对方梳理困扰和人生方向",{M:3,U:1}]]},
-  {q:"你最介意伴侣出现哪种情况？",a:[["承诺反复、态度忽冷忽热",{S:4}],["总说忙，很少有时间相处",{C:4}],["认为你的情绪是在无理取闹",{U:4}],["无法交流重要观点和人生想法",{M:4}]]},
-  {q:"关系出现问题时，你首先会：",a:[["确认双方是否还愿意继续走下去",{S:4}],["创造相处机会，让距离重新靠近",{C:3,S:1}],["表达感受并希望彼此真正听懂",{U:4}],["分析关系模式和问题的根源",{M:3,U:1}]]},
-  {q:"你表达爱意最常用的方式是：",a:[["兑现承诺，为未来做实际安排",{S:4}],["留出时间，陪对方做很多小事",{C:4}],["关注细节，照顾对方的情绪",{U:4}],["分享思想、兴趣和内心发现",{M:4}]]},
-  {q:"伴侣和朋友出去玩没有邀请你，你会：",a:[["希望对方提前说明安排，让你心里有数",{S:3,U:1}],["因为少了一次相处机会而失落",{C:4}],["希望对方理解你为何会有些难过",{U:4}],["只要彼此信任、边界一致就不介意",{M:2,S:2}]]},
-  {q:"你最容易被哪类人吸引？",a:[["成熟稳定、行为可靠的人",{S:4}],["温暖热情、愿意陪伴的人",{C:4}],["细腻温柔、共情能力强的人",{U:4}],["思想丰富、能聊到一起的人",{M:4}]]},
-  {q:"面对一段不确定的关系，你更想得到：",a:[["明确的身份与承诺",{S:4}],["持续而真实的相处时间",{C:4}],["坦白的情绪和真实态度",{U:4}],["双方对未来方向的深入交流",{M:4}]]},
-  {q:"伴侣指出你的缺点时，怎样的方式最能让你接受？",a:[["先确认这是为了共同经营关系",{S:3,M:1}],["在温和陪伴的氛围里慢慢谈",{C:3,U:1}],["先理解你的处境，再提出看法",{U:4}],["平等讨论，并允许彼此观点不同",{M:4}]]},
-  {q:"亲密关系中，你认为最重要的是：",a:[["忠诚、责任和长期承诺",{S:4}],["日常参与和高质量陪伴",{C:4}],["情绪理解和彼此接纳",{U:4}],["价值观契合与共同成长",{M:4}]]},
-  {q:"如果双方生活习惯不同，你最希望：",a:[["一起制定稳定、可执行的规则",{S:3,M:1}],["通过更多相处慢慢磨合",{C:3,S:1}],["彼此体谅习惯背后的真实需求",{U:4}],["保留差异，但对原则达成共识",{M:4}]]},
-  {q:"你最害怕关系进入哪种状态？",a:[["对方随时可能离开，却拒绝给出答案",{S:4}],["越来越少见面，彼此退出日常生活",{C:4}],["说了很多，却始终没有被真正听见",{U:4}],["只剩生活琐事，再也没有深度交流",{M:4}]]},
-  {q:"你理想中的爱情最接近：",a:[["确定选择彼此，并一起规划未来",{S:4}],["共享日常，在漫长时间里互相陪伴",{C:4}],["真实表达脆弱，也始终被温柔接住",{U:4}],["灵魂有共鸣，并肩成为更好的人",{M:4}]]}
+const D={
+S:{name:"安全感",tag:"确定、可靠、不会突然消失",color:"#ef6d75",meaning:"你需要从稳定回应、清晰承诺和前后一致的行动里确认关系是安全的。模糊、失联和反复比普通分歧更容易消耗你，因为你在意的不只是当下情绪，而是这段关系是否仍然可靠。",love:"你最能通过守约、提前告知、冲突后不失联，以及把你纳入未来安排感受到爱。",risk:"警觉升高时，你可能反复确认、预演最坏结果，或用冷淡测试对方会不会追上来。",ask:"请把联系节奏、临时变化如何告知、冲突后多久恢复沟通说具体；同时保留自己的生活支点，让安心不只依赖对方的即时反应。"},
+P:{name:"陪伴",tag:"共享日常、专注在场",color:"#a9d8c3",meaning:"你需要的不只是名义上的关系，而是对方真实参与生活。一起吃饭、散步、处理琐事，或在彼此疲惫时仍愿意留出一段专注时间，会让你确认自己没有被放在生活边缘。",love:"你最能从稳定相处时间、主动靠近和不被手机打断的共同体验中感受到爱。",risk:"当对方忙碌或需要独处时，你可能把时间减少直接理解为感情降温，也可能为了黏合关系牺牲自己的安排。",ask:"与其说“你都不陪我”，不如约定每周一段高质量时间，并区分人在身边、注意力在场和情绪参与这三个层次。"},
+U:{name:"理解",tag:"共情、接纳、听懂感受",color:"#e9b96e",meaning:"你需要伴侣先进入你的处境，再讨论对错和办法。对你来说，被理解不是对方凡事赞同，而是你的感受没有被嘲讽、否定或迅速修理，你可以带着不完美的情绪留在关系里。",love:"一句准确的复述、一个耐心的问题，或先安慰再分析，往往比昂贵礼物更能让你感受到爱。",risk:"你可能期待对方自动读懂暗示；一旦理解偏差，就容易把“没听懂”体验成“不在乎”。",ask:"练习说清楚“发生了什么—我有什么感受—此刻想被倾听、拥抱还是一起解决”，也允许伴侣通过提问逐步理解，而不是一次猜中。"},
+E:{name:"情绪价值",tag:"积极回应、温暖与被鼓舞",color:"#f3a6b5",meaning:"你很看重关系中的情绪流动：分享快乐时有人一起兴奋，低落时有人主动安慰，普通日子里也有赞美、幽默和热烈回应。你要的不是永远哄你，而是这段关系能让彼此更有能量。",love:"及时回应、真诚夸奖、拥抱、庆祝和带着温度的表达，会让你迅速感到被爱。",risk:"对方表达克制时，你可能误判为冷漠；也可能不断承担活跃气氛的任务，最后觉得只有自己在给关系供能。",ask:"明确告诉对方哪些回应对你有效，并观察情绪劳动是否双向；允许关系有平静期，但不要长期接受敷衍、讽刺和持续性冷淡。"},
+V:{name:"被看见",tag:"被重视、被欣赏、被记得",color:"#cfa8e8",meaning:"你希望自己的独特性被伴侣注意：努力被认可、细节被记住、重要时刻被认真对待。你不是单纯追求表扬，而是想确认对方看见了完整的你，而不只是把你当作某个功能或理所当然的存在。",love:"具体的欣赏、主动介绍、记住偏好、肯定付出，以及在人群中仍照顾你的感受，会让你感到自己很重要。",risk:"长期缺少反馈时，你容易通过加倍投入换取认可，或把一次疏忽扩大成“我从来不重要”。",ask:"把“重视我”翻译成可观察的行为，例如重要决定先沟通、对你的付出给出回应；同时把自我价值和伴侣的注意力适度分开。"},
+M:{name:"精神共鸣",tag:"深度交流、价值观与内心相遇",color:"#879dd9",meaning:"你期待的不只是生活搭子，还希望思想与内心能彼此进入。价值观、人生选择、兴趣和脆弱经验都可以谈；即使观点不同，对方仍愿意保持好奇，这会让你产生很深的亲密感。",love:"长谈、共同探索、分享作品与新发现，以及对你内心世界持续好奇，是你辨认爱的方式。",risk:"你可能把每次观点差异上升成“不适合”，或低估朴素照顾的价值，让对话变成一场灵魂伴侣考试。",ask:"固定创造深度交流空间，但把共鸣理解为愿意理解而非完全一致；也要观察想法能否落实为责任、照顾和现实协作。"},
+A:{name:"尊重与空间",tag:"保有自我、边界与选择权",color:"#75b9b1",meaning:"你需要亲密，但不愿在亲密里失去自己。被信任、拥有独处和社交空间、重大选择被平等商量，会让你更愿意靠近；控制、审问和替你作决定则会迅速削弱爱意。",love:"尊重拒绝、不过度查岗、支持各自兴趣，并在决定前询问你的想法，是你最看重的爱。",risk:"为了避免被束缚，你可能太晚表达需要，或在冲突中迅速抽离，让对方误以为你不在乎。",ask:"提前说明哪些空间是恢复能量、哪些边界不可侵犯，也约定独处之后如何重新连接；自主不是各过各的，而是亲密中的自愿选择。"},
+G:{name:"成长支持",tag:"并肩进步、托举目标",color:"#b6bd6e",meaning:"你希望爱能让两个人展开得更好。伴侣理解你的目标、在关键选择上提供资源与鼓励，也愿意共同复盘关系，会让你确认彼此不是互相消耗，而是在成为更完整的人。",love:"认真讨论目标、庆祝进步、困难时提供实际支持，以及敢于给出善意反馈，会让你感受到深层承诺。",risk:"你可能把关系经营成项目，用进步衡量爱，或以“为你好”越过对方节奏，忽略休息与无目的的快乐。",ask:"先询问对方需要鼓励、建议还是实际帮助；把共同成长设为邀请而非考核，也记得肯定已经拥有的生活。"}
+};
+const questions=[
+{q:"伴侣原本说今晚会联系，却到很晚都没有消息。最刺痛你的会是：",a:[["承诺落空，也不知道这段关系是否仍然可靠",{S:4}],["少了本来属于两个人的相处时间",{P:4}],["他没有意识到等待会让我是什么感受",{U:4}],["我像是被忘在了对方生活之外",{V:4}]]},
+{q:"争执刚结束，你最希望对方先做哪一件事？",a:[["明确说不会因为这次争执离开，约好何时继续谈",{S:4}],["先复述他听到的感受，确认没有误解我",{U:4}],["给我一个拥抱或温暖回应，让情绪先降下来",{E:4}],["允许我独处一会儿，不追问也不冷处理",{A:4}]]},
+{q:"一个普通的工作日晚上，哪幅画面最让你向往？",a:[["一起吃饭散步，聊些琐碎小事",{P:4}],["互相逗笑、夸奖，分享今天的小开心",{E:4}],["聊一部作品、一个观点或最近的内心变化",{M:4}],["各做各的，想靠近时再自然靠近",{A:4}]]},
+{q:"当你取得一个小成就，你最期待伴侣怎样回应？",a:[["具体说出他看见了我哪些努力",{V:4}],["比我还开心，马上给我热烈庆祝",{E:4}],["问我下一步想做什么，并支持我的计划",{G:4}],["和我聊这件事对我的意义与改变",{M:4}]]},
+{q:"面对换城市、转行这类重要决定，理想的伴侣会：",a:[["先理解我为什么纠结，不急着替我下结论",{U:4}],["尊重最终选择，即使和他的偏好不同",{A:4}],["一起分析资源与风险，支持我实现目标",{G:4}],["讨论决定对两人未来安排会有什么影响",{S:4}]]},
+{q:"在朋友聚会里，什么最能让你确认自己被爱？",a:[["他自然介绍我的优点，也记得照顾我的感受",{V:4}],["不必黏在一起，但会用眼神或动作和我保持连接",{S:4}],["主动带我融入，让现场气氛轻松愉快",{E:4}],["聚会结束后愿意留出只属于我们的时间",{P:4}]]},
+{q:"你情绪很低落时，希望对方提供哪些支持？",multi:true,max:2,a:[["先共情我的感受，不急着分析",{U:3}],["抱抱我、安慰我，给我温暖的回应",{E:3}],["安静陪着，帮我处理一点生活琐事",{P:3}],["给我空间，等我准备好再来谈",{A:3}]]},
+{q:"如果给关系设一个年度目标，你最想优先做到：",a:[["把未来安排和重要边界谈清楚",{S:4}],["建立更有深度、更诚实的对话",{M:4}],["支持彼此完成一个重要个人目标",{G:4}],["拥有更多固定且专注的共同时间",{P:4}]]},
+{q:"伴侣连续忙碌一周，哪种做法最能安抚你？",a:[["提前告诉我节奏，并明确忙完后何时联系",{S:4}],["哪怕只有十分钟，也专心听我说说今天",{P:4}],["不过度报备，但尊重我也安排自己的生活",{A:4}],["忙碌中仍记得问候我的重要事情",{V:4}]]},
+{q:"你们在重要价值观上出现分歧，你最希望：",a:[["认真理解彼此观点是怎样形成的",{M:4}],["先承认双方感受都有来由，再讨论差异",{U:4}],["不强迫改变，划清哪些事可以各自决定",{A:4}],["确认分歧会不会影响承诺和长期计划",{S:4}]]},
+{q:"以下哪一种礼物最容易让你感动？",a:[["我随口提过的小东西，他竟然一直记得",{V:4}],["一封很真诚、让我感到温暖的信",{E:4}],["两个人一起体验的活动或短途旅行",{P:4}],["一本能引发我们深入交流的书或作品",{M:4}]]},
+{q:"哪种情形最容易让你产生“我可能没那么重要”的感觉？",a:[["我的努力和改变长期得不到任何回应",{V:4}],["分享开心时，对方总是冷淡或扫兴",{E:4}],["约会和共同时间总被其他事情挤掉",{P:4}],["关系身份、联系节奏一直含糊不清",{S:4}]]},
+{q:"当你为一个重要目标努力时，希望伴侣怎样参与？",multi:true,max:2,a:[["帮我梳理计划，在需要时提供实际帮助",{G:3}],["尊重我的节奏，不替我决定成功的标准",{A:3}],["看见过程中的努力，而不只关心结果",{V:3}],["忙累时陪我吃顿饭，让我不用独自扛着",{P:3}]]},
+{q:"关于手机、异性朋友和个人隐私，你最看重：",a:[["规则提前说清楚，双方一致执行",{S:4}],["不查岗、不代替我决定和谁来往",{A:4}],["即使立场不同，也理解我的顾虑从哪来",{U:4}],["我的边界被认真记住，而不是一再试探",{V:4}]]},
+{q:"一段关系进入平淡期，什么最能让你重新靠近？",a:[["恢复规律相处，一起经营生活小事",{P:4}],["增加赞美、玩笑和主动表达爱意",{E:4}],["谈谈彼此最近真正关心和困惑的事",{M:4}],["一起学新东西、做一个共同项目",{G:4}]]},
+{q:"当你说出一段不太体面的脆弱经历，你最怕对方：",a:[["马上判断我太敏感、太矫情",{U:4}],["以后拿这件事攻击我，让关系不再安全",{S:4}],["反应冷淡，像我的感受根本不值得回应",{E:4}],["只看见问题，却看不见我已经多努力",{V:4}]]},
+{q:"伴侣公开为你感到骄傲时，哪一点最打动你？",a:[["他真的注意到了那个常被忽略的我",{V:4}],["他的欣喜很有感染力，让我也更喜欢自己",{E:4}],["他看见我的潜力，愿意支持我继续前进",{G:4}],["他理解这件事与我内心价值观的关系",{M:4}]]},
+{q:"谈到未来时，你最希望优先确认哪些事情？",multi:true,max:2,a:[["关系承诺、城市与家庭等关键安排",{S:3}],["彼此目标如何互相支持、共同成长",{G:3}],["即使相爱，也各自保留哪些空间和选择",{A:3}],["日常能否稳定分配给彼此足够时间",{P:3}]]},
+{q:"对你而言，真正的亲密通常包含哪些体验？",multi:true,max:2,a:[["不必解释得很完美，也能被理解和接纳",{U:3}],["可以谈很深的话题，彼此思想始终有好奇",{M:3}],["大量平凡日常都愿意一起经历",{P:3}],["快乐有人放大，难过有人温柔接住",{E:3}]]},
+{q:"如果只能改善关系中的一件事，你会优先选择：",a:[["减少不确定，让承诺和行动更一致",{S:4}],["让我更常感到被欣赏、被认真放在心上",{V:4}],["让双方既能亲密，也能自在做自己",{A:4}],["让我们不只维持关系，也能托举彼此成长",{G:4}]]}
 ];
-
-const profiles={
-  S:{name:"安全感",subtitle:"你最需要的是一段可确认、可依赖、不会轻易消失的关系。",description:"你对爱的感受与“确定性”紧密相连。比起偶尔的浪漫，你更在意对方的态度是否稳定、承诺是否兑现、关系有没有清晰位置。当对方行为一致、愿意公开选择你，并把你放进未来计划时，你才真正放松下来。你并不是天生多疑，而是会通过细节判断这段关系是否安全：回复是否稳定、约定是否被重视、发生冲突时对方会不会突然抽离。对你而言，爱不是一句情绪浓烈的话，而是一种长期不变的行动。",strength:"你最容易从守信、稳定回应、清晰边界和共同规划中感受到爱。你往往认真对待关系，也愿意承担责任。一旦确认彼此可靠，你能够投入很多耐心与忠诚，成为伴侣生活中非常稳定的支持者。",risk:"关系中的模糊、忽冷忽热或临时改变，很容易触发你的警觉。你可能反复确认对方态度，或把短暂的沉默理解成关系正在变坏。如果为了避免失去而压抑需求、过度迁就，安全感反而会越来越依赖对方的即时反应。",advice:"把“我需要你证明爱我”转换成具体可执行的请求，例如固定联系频率、重要安排提前告知、冲突后约定何时继续沟通。与此同时，建立不依赖伴侣的稳定支点：自己的作息、朋友、目标和经济安排。真正稳固的安全感，一半来自可信任的关系，一半来自即使面对变化，你也相信自己有能力照顾好自己。"},
-  C:{name:"陪伴",subtitle:"你最需要的是有人真正参与生活，而不只是口头上爱你。",description:"你判断一段关系是否亲密，主要看彼此有没有共享真实生活。一起吃饭、散步、做家务、经历普通的一天，这些看似平淡的时刻对你有很高的情感价值。你未必要求持续热烈，但希望对方愿意留出时间，让你进入他的日常，也愿意进入你的世界。对你而言，“我在这里”常常比“我爱你”更有力量。陪伴让你确认自己不是被放在生活边缘，而是关系中真正重要的一部分。",strength:"你最容易从共同时间、主动靠近、身体在场和日常参与中感受到爱。你擅长用行动营造温度，也愿意在伴侣疲惫或低落时安静守候。你的存在常常能让关系从抽象承诺落回真实生活。",risk:"当对方忙碌、需要独处或表达方式偏理性时，你可能把时间减少等同于感情变淡。为了获得陪伴，你也可能牺牲自己的安排，久而久之产生不平衡感。人在身边并不等于真正连接；如果只追求相处时长，反而容易忽略相处质量。",advice:"不要只说“你都不陪我”，而要提出具体场景，例如每周一个不看手机的晚上、每天睡前十分钟交流。区分“需要陪伴”和“害怕独处”，保留自己的兴趣与社交，让相聚是主动选择而不是相互捆绑。衡量陪伴时，同时观察时间、专注度和情绪参与三个部分。"},
-  U:{name:"理解",subtitle:"你最需要的不是被分析或纠正，而是被看见、听懂和接纳。",description:"你的核心关系需求是情绪上的“被理解”。当你分享感受时，你希望对方先进入你的处境，而不是马上告诉你应该怎么做。对你而言，亲密意味着不必隐藏脆弱，也不用把所有情绪解释得完全合理。一个准确的回应、一句“我明白你为什么难过”，可能比礼物和建议更能让你感受到爱。你在意的不只是对方是否听见语言，而是他有没有听见语言背后的需要。",strength:"你最容易从共情回应、细节关注、情绪接纳和温柔确认中感受到爱。你通常具有较强的情绪感知力，也很容易察觉伴侣没有说出口的变化。关系状态良好时，你能够创造很深的信任与心理亲密。",risk:"你可能期待对方自动读懂暗示，当对方理解不准确时便感到失望。情绪敏感也容易让你过度解读语气和细节。如果每一次分歧都被体验成“不被理解”，双方会越来越不敢表达不同意见。理解你并不等于对方必须同意你。",advice:"练习用“发生了什么—我感到什么—我需要什么”的结构表达，例如“计划突然改变时我有点失落，我希望你先安慰我，再讨论解决办法”。明确告诉伴侣你此刻需要倾听、拥抱还是建议。同时允许对方通过提问来理解你，而不是要求一次猜中。真正的理解，是双方愿意持续靠近彼此的经验。"},
-  M:{name:"精神交流",subtitle:"你最需要的是思想被回应、内心被进入，并和一个人共同成长。",description:"你渴望的亲密不止是相处和照顾，更是一种精神层面的共鸣。你希望能与伴侣讨论价值观、兴趣、人生选择和内心变化，也希望彼此能够带来新的视角。对你来说，能否聊得深入、能否尊重差异、能否在成长方向上互相启发，会直接决定关系的吸引力。当一段关系只剩下生活安排而缺少思想交换时，即使表面稳定，你也可能感到孤独。",strength:"你最容易从深度对话、共同兴趣、价值观契合和彼此启发中感受到爱。你尊重独立人格，也愿意和伴侣一起反思关系、探索世界。你追求的通常不是完全相同，而是即使不同也能彼此好奇。",risk:"你可能过度追求“灵魂伴侣式”的完美共鸣，对日常照顾和朴素陪伴估值不足。观点不一致时，也可能迅速怀疑两个人是否适合。深度交流不能替代责任、行动和现实磨合；有些爱并不擅长用漂亮的语言表达。",advice:"建立固定的深度交流空间，例如每周分享一次最近的困惑、发现或长期计划。同时观察伴侣是否愿意理解，而不只看他是否与你观点一致。把精神共鸣落实到共同经历和现实行动里，让思想连接成为关系的营养，而不是筛选对方的高压考试。"}
-};
-
-const hybridProfiles={
-  CS:{name:"安全感＋陪伴",subtitle:"你需要确定的选择，也需要真实而持续的在场。",description:"对你来说，承诺只有进入日常才真正可信。稳定联系、固定见面和共同规划，会让你确认自己不仅被喜欢，也被认真放进了对方的生活。你既害怕关系摇摆，也害怕在一段有名分的关系里依然孤独。",strength:"你从稳定回应、共同时间和持续参与中感受爱，也愿意用长期陪伴证明自己的认真。",risk:"对方偶尔忙碌或需要空间时，你可能同时感到被冷落和关系不稳，从而加倍索取回应。",advice:"同时约定关系底线与相处节奏：哪些事情必须告知、每周需要多少高质量时间。稳定不是时时黏在一起，而是即使暂时分开，也知道何时会重新连接。"},
-  SU:{name:"安全感＋理解",subtitle:"你需要明确的关系，也需要情绪在关系里拥有安全位置。",description:"只有承诺而没有共情，对你而言仍然不够安全。你希望伴侣不仅选择你，也能在你脆弱、焦虑或敏感时不否定你。当对方态度清晰并愿意理解你的反应，你才会真正卸下防备。",strength:"你重视忠诚与情绪诚实，关系稳定后通常能给予伴侣深度信任和温柔支持。",risk:"你可能频繁通过情绪反应测试对方是否在乎，或将理解不足直接等同于爱得不够。",advice:"把抽象确认拆成两类请求：事实层面的承诺，以及情绪层面的回应。允许伴侣不完全懂，但要求他愿意听、愿意问、愿意留下来。"},
-  MS:{name:"安全感＋精神交流",subtitle:"你需要方向一致，也需要一段可以长期对话的关系。",description:"你希望这段关系既有稳定未来，也有思想生命力。明确承诺让你安心，而价值观契合和共同成长让你相信两个人能走得长久。只有浪漫却没有方向，或只有责任却没有交流，都会让你觉得不完整。",strength:"你既能考虑现实，也重视关系的长期成长，适合共同制定目标并持续复盘关系。",risk:"你可能把每一次观点差异都上升到未来不确定，或过早要求对方给出完整人生答案。",advice:"区分“核心原则”和“可变化观点”。对原则建立共识，对观点保持好奇；用阶段性计划代替要求一次确定整个人生。"},
-  CU:{name:"陪伴＋理解",subtitle:"你需要有人在身边，也需要这个人真正懂你为何需要他。",description:"你渴望的是有情绪质量的陪伴。单纯待在同一空间并不足够，你希望相处中有专注、回应和温柔。对方愿意放下手机听你说话、察觉你的变化，会让你感到自己被珍惜。",strength:"你擅长营造亲密氛围，也容易给予伴侣细致、柔软而持续的情感照顾。",risk:"当对方在场却心不在焉时，你会格外受伤；也可能为了维持连接而忽略自己的独处需要。",advice:"把陪伴设计成有质量的仪式：明确时间、减少干扰、轮流分享。也为自己保留恢复能量的空间，避免让伴侣承担全部情绪出口。"},
-  CM:{name:"陪伴＋精神交流",subtitle:"你需要一起生活，也需要一起探索世界。",description:"你理想的爱既有烟火气，也有共同话题。你希望能一起经历事情、分享兴趣，并在相处中不断发现彼此。只有聊天没有行动显得飘，只有日常没有交流又显得空。",strength:"你很适合通过共同体验维持关系活力，也能让平凡相处产生丰富记忆。",risk:"当生活进入重复期，你可能误以为感情失去吸引力，继而不断追求新鲜刺激。",advice:"建立共同项目，例如旅行计划、阅读、运动或学习，同时保留各自兴趣。新鲜感不一定来自换一个人，也可以来自两个人持续更新自己。"},
-  MU:{name:"理解＋精神交流",subtitle:"你需要被读懂，也需要思想与内心都能被认真回应。",description:"你追求高度的心理亲密。你希望对方既能理解情绪，也能和你讨论情绪背后的价值观、成长经历与人生选择。浅层安慰可能让你觉得不够，而真正深入的对话会让你产生强烈连接。",strength:"你有能力建立非常深的关系，重视真诚、自我觉察和持续成长，也愿意理解伴侣复杂的内心。",risk:"你可能对交流深度要求过高，让对方觉得每次谈话都像一次心理考试；也可能忽略不善表达者的行动式关心。",advice:"深度交流之外，也允许关系拥有轻松和沉默。把“懂我”变成共同探索，而不是一次答对；同时学习识别语言之外的爱意表达。"}
-};
-
-const order=["S","C","U","M"];
-const labels={S:"安全感",C:"陪伴",U:"理解",M:"精神交流"};
-const colors={S:"#ef6d75",C:"#a9d8c3",U:"#e9b96e",M:"#d9c7f4"};
-let current=0,answers=Array(questions.length).fill(null);
-const $=id=>document.getElementById(id);
-function showScreen(id){document.querySelectorAll(".screen").forEach(el=>el.classList.remove("active"));$(id).classList.add("active");window.scrollTo({top:0,behavior:"smooth"});}
-function renderQuestion(){const item=questions[current];$("progressText").textContent=`${String(current+1).padStart(2,"0")} / ${questions.length}`;$("progressBar").style.width=`${(current+1)/questions.length*100}%`;$("questionNumber").textContent=`QUESTION ${String(current+1).padStart(2,"0")}`;$("questionText").textContent=item.q;$("options").innerHTML="";item.a.forEach((option,index)=>{const b=document.createElement("button");b.className=`option${answers[current]===index?" selected":""}`;b.setAttribute("role","radio");b.setAttribute("aria-checked",answers[current]===index?"true":"false");b.innerHTML=`<span class="option-key">${String.fromCharCode(65+index)}</span><span>${option[0]}</span>`;b.addEventListener("click",()=>selectOption(index));$("options").appendChild(b);});$("prevButton").disabled=current===0;$("nextButton").disabled=answers[current]===null;$("nextButton").textContent=current===questions.length-1?"提交测试 →":"下一题 →";}
-function selectOption(index){answers[current]=index;renderQuestion();if(current<questions.length-1)setTimeout(()=>{current++;renderQuestion();},260);}
-function scores(){const s={S:0,C:0,U:0,M:0};answers.forEach((v,i)=>Object.entries(questions[i].a[v][1]).forEach(([k,n])=>s[k]+=n));return s;}
-function renderResult(){const s=scores(),rank=Object.entries(s).sort((a,b)=>b[1]-a[1]),[first,second]=rank,isHybrid=first[1]-second[1]<=3||first[1]/80<.27,key=[first[0],second[0]].sort().join(""),p=isHybrid?hybridProfiles[key]:profiles[first[0]],pct=Math.round(first[1]/80*100);$("resultTitle").textContent=p.name;$("resultSubtitle").textContent=isHybrid?`${p.subtitle} 你的第一需求是${labels[first[0]]}，第二需求是${labels[second[0]]}。`:p.subtitle;$("resultDescription").textContent=p.description;$("resultStrength").textContent=p.strength;$("resultRisk").textContent=p.risk;$("resultAdvice").textContent=p.advice;$("topPercent").textContent=`${pct}%`;let start=0;const stops=order.map(k=>{const end=start+s[k]/80*100,x=`${colors[k]} ${start}% ${end}%`;start=end;return x;});$("donutChart").style.background=`conic-gradient(${stops.join(",")})`;$("scoreLegend").innerHTML=order.map(k=>`<div class="legend-row"><span class="legend-dot" style="background:${colors[k]}"></span><span>${labels[k]}</span><strong>${Math.round(s[k]/80*100)}%</strong></div>`).join("");showScreen("resultScreen");window.__latestResult={name:p.name,primary:labels[first[0]],secondary:labels[second[0]]};}
-$("startButton").addEventListener("click",()=>{current=0;answers.fill(null);renderQuestion();showScreen("quizScreen");});$("closeButton").addEventListener("click",()=>showScreen("startScreen"));$("prevButton").addEventListener("click",()=>{if(current>0){current--;renderQuestion();}});$("nextButton").addEventListener("click",()=>{if(answers[current]===null)return;if(current===questions.length-1)renderResult();else{current++;renderQuestion();}});$("restartButton").addEventListener("click",()=>{current=0;answers.fill(null);renderQuestion();showScreen("quizScreen");});$("shareButton").addEventListener("click",async()=>{const r=window.__latestResult,text=`我在亲密关系中最需要「${r.name}」！第一需求：${r.primary}，第二需求：${r.secondary}。你最需要什么？`;try{await navigator.clipboard.writeText(text);}catch{const a=document.createElement("textarea");a.value=text;document.body.appendChild(a);a.select();document.execCommand("copy");a.remove();}$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),1800);});
+let current=0,answers=Array.from({length:questions.length},()=>[]);const $=id=>document.getElementById(id);
+function showScreen(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));$(id).classList.add("active");window.scrollTo({top:0,behavior:"smooth"});}
+function renderQuestion(){const item=questions[current],chosen=answers[current];$("progressText").textContent=`${String(current+1).padStart(2,"0")} / ${questions.length}`;$("progressBar").style.width=`${(current+1)/questions.length*100}%`;$("questionNumber").textContent=`QUESTION ${String(current+1).padStart(2,"0")}`;$("questionText").textContent=item.q;$("questionHint").textContent=item.multi?`本题可多选，最多选择 ${item.max} 项`:"";$("questionHint").className=`question-hint${item.multi?" show":""}`;$("options").setAttribute("role",item.multi?"group":"radiogroup");$("options").innerHTML="";item.a.forEach((option,index)=>{const selected=chosen.includes(index),b=document.createElement("button");b.className=`option${selected?" selected":""}`;b.setAttribute("role",item.multi?"checkbox":"radio");b.setAttribute("aria-checked",String(selected));b.innerHTML=`<span class="option-key">${selected&&item.multi?"✓":String.fromCharCode(65+index)}</span><span>${option[0]}</span>`;b.onclick=()=>selectOption(index);$("options").appendChild(b);});$("prevButton").disabled=current===0;$("nextButton").disabled=!chosen.length;$("nextButton").textContent=current===questions.length-1?"提交测试 →":"下一题 →";}
+function selectOption(index){const item=questions[current];if(item.multi){const pos=answers[current].indexOf(index);if(pos>=0)answers[current].splice(pos,1);else if(answers[current].length<item.max)answers[current].push(index);else{answers[current].shift();answers[current].push(index);}renderQuestion();}else{answers[current]=[index];renderQuestion();if(current<questions.length-1)setTimeout(()=>{current++;renderQuestion();},240);}}
+function getScores(){const s=Object.fromEntries(Object.keys(D).map(k=>[k,0]));answers.forEach((picked,i)=>picked.forEach(v=>Object.entries(questions[i].a[v][1]).forEach(([k,n])=>s[k]+=n)));return s;}
+function reportText(rank){const[a,b,c]=rank.map(x=>D[x[0]]),close=rank[0][1]-rank[1][1]<=2;return{title:`${a.name} · ${b.name} · ${c.name}`,subtitle:`你的首要需求是「${a.name}」，紧随其后的是「${b.name}」与「${c.name}」。${close?"前两项十分接近，说明它们往往需要同时被满足。":"第一项更突出，是你判断一段关系是否值得投入的关键线索。"}`,overview:`你的答案呈现出一个很清楚的顺序：你会先用“${a.tag}”判断关系是否适合自己，再通过“${b.tag}”确认亲密是否真实，最后由“${c.tag}”决定这段关系能不能长久滋养你。这个排序不是性格判决，也不代表排名靠后的需求不重要；它更像你的关系使用说明书——当核心需求得到稳定回应时，你通常更松弛、更愿意信任，也更能把爱给出去；当它长期落空，即使关系表面没有大问题，你仍可能感到孤独、疲惫或说不出的不对劲。`,primary:`「${a.name}」排在第一位。${a.meaning}${a.love}这也解释了为什么有些在别人看来很小的细节，对你却格外重要：它们触碰的不是一件孤立的小事，而是你用来确认“我在这段关系里是否被好好对待”的核心通道。需要强调的是，这项需求本身没有高低之分；真正重要的是，你能否识别它、准确表达它，并观察对方是否愿意持续回应。`,secondary:`第二位的「${b.name}」意味着：${b.meaning}第三位的「${c.name}」则补充了另一层标准：${c.meaning}所以你真正想要的通常不是单一体验。只有${a.name}却缺少${b.name}，你可能觉得关系“有形式但不贴近”；有${b.name}却长期缺少${c.name}，你又可能觉得当下不错，却难以确信它能走得深、走得久。对你而言，优质关系需要这三种体验彼此配合，而不是用其中一种代替另外两种。`,pattern:`当关系状态良好时，你会因为${a.name}得到满足而放下防备，再主动投入${b.name}，并通过${c.name}建立更深连接。这是一条向上的循环。相反，压力出现时，你可能先在「${a.name}」上感到缺口，随后用「${b.name}」的方式追问或补偿；如果伴侣没有理解真正需求，只回应了表面行为，你就更容易觉得“我已经说了这么多，他还是不懂”。此时最有效的不是把情绪加码，而是指出触发事件、核心需求和希望对方采取的具体行动。`,blindSpot:`你最需要留意的是：${a.risk}同时，${b.risk}${c.risk}这些反应通常不是你“太难相处”，而是保护机制在提醒你某个重要需求没有被照顾。但保护方式如果变成试探、指责、讨好或突然撤退，就可能让伴侣只看见防御，反而看不见你真正的渴望。理解需求的目的，不是要求对方负责你的全部情绪，而是让双方更早、更清楚地协商。`,advice:`第一，把抽象抱怨改成可以执行的请求。关于${a.name}，你可以这样做：${a.ask} 第二，照顾你的第二需求「${b.name}」：${b.ask} 第三，为「${c.name}」留出长期空间：${c.ask}\n\n一次有效沟通可以使用这个句式：“当___发生时，我会感到___，因为对我来说___很重要。我希望下次我们可以___，你觉得什么方式也适合你？”最后，请观察的不是对方能否一次满分，而是他是否愿意听、愿意协商、愿意在行动中逐渐调整。需求可以磨合，长期轻视却不应被浪漫化；适合你的关系，不是永远没有失望，而是失望出现后，你们仍有能力重新理解、修复并靠近。`};}
+function renderResult(){const s=getScores(),rank=Object.entries(s).sort((x,y)=>y[1]-x[1]),r=reportText(rank),max=rank[0][1]||1;$("resultTitle").textContent=r.title;$("resultSubtitle").textContent=r.subtitle;$("rankingList").innerHTML=rank.slice(0,5).map(([k,v],i)=>`<div class="rank-row"><span class="rank-number">${i+1}</span><span class="rank-name"><strong>${D[k].name}</strong><small>${D[k].tag.split("、")[0]}</small></span><span class="rank-track"><i style="width:${Math.max(18,v/max*100)}%;background:${D[k].color}"></i></span></div>`).join("");["overview","primary","secondary","pattern","blindSpot","advice"].forEach(k=>$("result"+k.charAt(0).toUpperCase()+k.slice(1)).textContent=r[k]);window.__latestResult={text:`我的核心关系需求排序是：${rank.slice(0,3).map((x,i)=>`${i+1}.${D[x[0]].name}`).join("、")}。${r.subtitle}`};showScreen("resultScreen");}
+function reset(){current=0;answers=Array.from({length:questions.length},()=>[]);renderQuestion();showScreen("quizScreen");}
+$("startButton").onclick=reset;$("closeButton").onclick=()=>showScreen("startScreen");$("prevButton").onclick=()=>{if(current>0){current--;renderQuestion();}};$("nextButton").onclick=()=>{if(!answers[current].length)return;if(current===questions.length-1)renderResult();else{current++;renderQuestion();}};$("restartButton").onclick=reset;$("shareButton").onclick=async()=>{const text=window.__latestResult.text;try{await navigator.clipboard.writeText(text);}catch{const a=document.createElement("textarea");a.value=text;document.body.appendChild(a);a.select();document.execCommand("copy");a.remove();}$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),1800);};
 
 </script>
 </body>
