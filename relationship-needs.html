@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="用20道题，发现你在亲密关系中最需要什么。" />
+  <title>你在亲密关系中最需要什么？</title>
+  <style>
+:root {
+  --ink: #2e2531;
+  --muted: #7c6f7c;
+  --paper: #fffaf6;
+  --rose: #ef6d75;
+  --rose-dark: #d94f5a;
+  --peach: #ffc3a3;
+  --lavender: #d9c7f4;
+  --mint: #a9d8c3;
+  --gold: #e9b96e;
+  --line: rgba(62, 43, 58, .11);
+  --shadow: 0 24px 70px rgba(100, 57, 72, .16);
+}
+
+* { box-sizing: border-box; }
+html { min-height: 100%; background: #f8eee9; }
+body {
+  margin: 0; min-height: 100vh; color: var(--ink);
+  font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 15% 8%, rgba(255,255,255,.9), transparent 25%),
+    linear-gradient(145deg, #fae8df 0%, #f4eef5 53%, #e8f2ec 100%);
+  overflow-x: hidden;
+}
+button { font: inherit; }
+.ambient { position: fixed; border-radius: 50%; filter: blur(8px); opacity: .55; pointer-events: none; }
+.ambient-one { width: 320px; height: 320px; right: -110px; top: -90px; background: #ffd3bd; }
+.ambient-two { width: 260px; height: 260px; left: -100px; bottom: -80px; background: #cdb9e9; }
+.shell { width: min(100% - 32px, 900px); margin: 0 auto; padding: 28px 0 56px; position: relative; z-index: 1; }
+.brand { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; letter-spacing: .08em; }
+.brand-mark { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: white; background: var(--ink); font-family: Georgia, serif; }
+.screen { display: none; animation: fadeUp .45s ease both; }
+.screen.active { display: block; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+.start-screen { text-align: center; padding-top: clamp(50px, 10vh, 100px); }
+.eyebrow, .result-kicker { display: inline-block; padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.9); color: var(--rose-dark); font-size: 13px; font-weight: 700; letter-spacing: .08em; }
+h1 { font-family: Georgia, "Songti SC", serif; font-size: clamp(42px, 8vw, 74px); line-height: 1.05; margin: 24px 0 18px; letter-spacing: -.04em; }
+h1 em { font-style: normal; color: var(--rose); }
+.lead { max-width: 540px; margin: auto; color: var(--muted); line-height: 1.8; }
+.preview-card { position: relative; width: 230px; height: 150px; margin: 44px auto 36px; }
+.mini-card { position: absolute; inset: 0; border-radius: 24px; }
+.card-back { background: var(--lavender); transform: rotate(-7deg); }
+.card-front { display: flex; flex-direction: column; justify-content: center; gap: 8px; background: rgba(255,255,255,.87); border: 1px solid white; box-shadow: var(--shadow); transform: rotate(3deg); }
+.card-front span { color: var(--muted); font-size: 12px; }
+.card-front strong { font-family: Georgia, "Songti SC", serif; font-size: 24px; }
+.sparkles { color: var(--gold); }
+.primary-button, .secondary-button { min-height: 52px; border: 0; border-radius: 16px; padding: 0 24px; font-weight: 750; cursor: pointer; transition: .2s ease; }
+.primary-button { color: white; background: var(--ink); box-shadow: 0 12px 26px rgba(46,37,49,.2); }
+.primary-button:hover:not(:disabled) { transform: translateY(-2px); background: #171118; }
+.primary-button:disabled { opacity: .35; cursor: not-allowed; box-shadow: none; }
+.primary-button span { margin-left: 18px; }
+.secondary-button { color: var(--ink); background: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.9); }
+.secondary-button:hover:not(:disabled) { background: white; }
+.secondary-button:disabled { opacity: .35; cursor: not-allowed; }
+.privacy { margin-top: 18px; color: #998c96; font-size: 12px; }
+
+.quiz-screen { padding-top: 34px; }
+.quiz-topline { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; color: var(--muted); font-size: 13px; font-weight: 700; }
+.icon-button { justify-self: start; width: 38px; height: 38px; border: 1px solid rgba(255,255,255,.9); background: rgba(255,255,255,.5); border-radius: 50%; font-size: 22px; color: var(--muted); cursor: pointer; }
+.quiet-badge { justify-self: end; }
+.progress-track { height: 5px; background: rgba(255,255,255,.62); border-radius: 9px; margin: 18px 0 28px; overflow: hidden; }
+.progress-track div { height: 100%; width: 5%; border-radius: inherit; background: linear-gradient(90deg, var(--rose), var(--gold)); transition: width .35s ease; }
+.question-card { min-height: 470px; padding: clamp(26px, 6vw, 56px); border-radius: 32px; background: rgba(255,250,246,.82); border: 1px solid rgba(255,255,255,.9); box-shadow: var(--shadow); backdrop-filter: blur(16px); }
+.question-number { color: var(--rose-dark); font-size: 12px; font-weight: 800; letter-spacing: .15em; }
+.question-card h2 { max-width: 680px; margin: 16px 0 30px; font-family: Georgia, "Songti SC", serif; font-size: clamp(26px, 4vw, 38px); line-height: 1.4; }
+.options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.option { display: flex; align-items: center; gap: 14px; min-height: 68px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.72); color: var(--ink); text-align: left; cursor: pointer; transition: .2s ease; }
+.option:hover { transform: translateY(-2px); border-color: rgba(239,109,117,.45); box-shadow: 0 8px 20px rgba(80,48,62,.08); }
+.option.selected { border-color: var(--rose); background: #fff1ec; box-shadow: inset 0 0 0 1px var(--rose); }
+.option-key { flex: 0 0 auto; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: #f2e9e6; font-family: Georgia, serif; font-weight: 700; }
+.option.selected .option-key { color: white; background: var(--rose); }
+.navigation { display: flex; justify-content: space-between; gap: 14px; margin-top: 20px; }
+.small { min-width: 138px; }
+
+.result-screen { padding-top: 58px; text-align: center; }
+.result-screen h1 { margin: 18px 0 10px; color: var(--rose-dark); }
+.result-subtitle { max-width: 620px; margin: 0 auto 34px; color: var(--muted); font-size: 17px; line-height: 1.7; }
+.result-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; text-align: left; }
+.chart-card, .insight-card, .advice-grid article { background: rgba(255,250,246,.82); border: 1px solid white; border-radius: 26px; box-shadow: 0 15px 40px rgba(95,61,72,.09); }
+.chart-card { display: flex; align-items: center; gap: 28px; padding: 28px; }
+.donut { flex: 0 0 auto; display: grid; place-items: center; width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(var(--rose) 0 25%, var(--mint) 25% 50%, var(--gold) 50% 75%, var(--lavender) 75%); position: relative; }
+.donut::after { content: ""; position: absolute; inset: 16px; border-radius: 50%; background: var(--paper); }
+.donut div { z-index: 1; text-align: center; }
+.donut strong { display: block; font-family: Georgia, serif; font-size: 28px; }
+.donut span { color: var(--muted); font-size: 11px; }
+.score-legend { flex: 1; display: grid; gap: 10px; }
+.legend-row { display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 8px; font-size: 13px; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; }
+.legend-row span:nth-child(2) { color: var(--muted); }
+.insight-card { padding: 30px; }
+.insight-label, .advice-grid article span { display: block; margin-bottom: 14px; color: var(--rose-dark); font-size: 12px; font-weight: 800; letter-spacing: .1em; }
+.insight-card p, .advice-grid p { margin: 0; line-height: 1.85; color: #5f535d; }
+.advice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; text-align: left; }
+.advice-grid article { padding: 26px; }
+.advice-grid .wide { grid-column: 1 / -1; background: var(--ink); }
+.advice-grid .wide span { color: var(--peach); }
+.advice-grid .wide p { color: #fff9f5; }
+.result-actions { display: flex; justify-content: center; gap: 14px; margin-top: 28px; }
+.toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 20px); padding: 12px 18px; color: white; background: var(--ink); border-radius: 999px; opacity: 0; pointer-events: none; transition: .3s; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (max-width: 680px) {
+  .shell { width: min(100% - 22px, 900px); padding-top: 18px; }
+  .start-screen { padding-top: 45px; }
+  .options, .result-grid, .advice-grid { grid-template-columns: 1fr; }
+  .question-card { min-height: 0; padding: 26px 18px; border-radius: 25px; }
+  .question-card h2 { min-height: 78px; margin-bottom: 22px; }
+  .option { min-height: 60px; }
+  .chart-card { flex-direction: column; text-align: center; }
+  .score-legend { width: 100%; }
+  .advice-grid .wide { grid-column: auto; }
+  .result-actions { flex-direction: column-reverse; }
+  .result-actions button { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+</style>
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <main class="shell">
+    <header class="brand" aria-label="亲密关系实验室">
+      <span class="brand-mark">♡</span>
+      <span>亲密关系实验室</span>
+    </header>
+
+    <section id="startScreen" class="screen start-screen active">
+      <div class="eyebrow">20 道题 · 约 3 分钟</div>
+      <h1>亲密关系中<br><em>你最需要什么？</em></h1>
+      <p class="lead">你真正渴望的，也许不是更多的爱，而是被用你需要的方式爱着。</p>
+      <div class="preview-card" aria-hidden="true">
+        <div class="mini-card card-back"></div>
+        <div class="mini-card card-front">
+          <span>你的关系需求关键词</span>
+          <strong>等待揭晓</strong>
+          <div class="sparkles">✦　✧　✦</div>
+        </div>
+      </div>
+      <button id="startButton" class="primary-button">开始测试 <span>→</span></button>
+      <p class="privacy">答案仅用于本次测试，不会上传或保存</p>
+    </section>
+
+    <section id="quizScreen" class="screen quiz-screen">
+      <div class="quiz-topline">
+        <button id="closeButton" class="icon-button" aria-label="返回开始页">×</button>
+        <span id="progressText">01 / 20</span>
+        <span class="quiet-badge">凭直觉选</span>
+      </div>
+      <div class="progress-track" aria-hidden="true"><div id="progressBar"></div></div>
+      <article class="question-card">
+        <div id="questionNumber" class="question-number">QUESTION 01</div>
+        <h2 id="questionText"></h2>
+        <div id="options" class="options" role="radiogroup" aria-label="答案选项"></div>
+      </article>
+      <div class="navigation">
+        <button id="prevButton" class="secondary-button">← 上一题</button>
+        <button id="nextButton" class="primary-button small" disabled>下一题 →</button>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen result-screen">
+      <div class="result-kicker">你在亲密关系中最需要</div>
+      <h1 id="resultTitle"></h1>
+      <p id="resultSubtitle" class="result-subtitle"></p>
+
+      <div class="result-grid">
+        <div class="chart-card">
+          <div class="donut" id="donutChart"><div><strong id="topPercent">0%</strong><span>核心需求</span></div></div>
+          <div id="scoreLegend" class="score-legend"></div>
+        </div>
+        <div class="insight-card">
+          <span class="insight-label">关系画像</span>
+          <p id="resultDescription"></p>
+        </div>
+      </div>
+
+      <div class="advice-grid">
+        <article><span>你如何感受爱</span><p id="resultStrength"></p></article>
+        <article><span>容易受伤的地方</span><p id="resultRisk"></p></article>
+        <article class="wide"><span>给你的关系建议</span><p id="resultAdvice"></p></article>
+      </div>
+
+      <div class="result-actions">
+        <button id="restartButton" class="secondary-button">重新测试</button>
+        <button id="shareButton" class="primary-button small">复制结果文案</button>
+      </div>
+      <div id="toast" class="toast" role="status">结果已复制</div>
+    </section>
+  </main>
+  <script>
+const questions = [
+  {q:"伴侣很久没有回复消息时，你通常会：",a:[["继续等待，相信对方只是正在忙",{S:3,C:1}],["主动询问发生了什么",{C:2,U:2}],["有些生气，觉得自己没有被重视",{S:2,U:2}],["假装不在意，减少自己的主动",{M:2,S:2}]]},
+  {q:"你最喜欢怎样的约会？",a:[["精心安排、充满仪式感的约会",{S:2,C:2}],["一起散步、吃饭，长时间聊天",{U:2,M:2}],["共同尝试一件新鲜的事情",{M:3,C:1}],["即使各做各的，也能待在一起",{C:3,S:1}]]},
+  {q:"发生争执以后，你更希望对方：",a:[["明确告诉你关系不会因此结束",{S:4}],["先陪在你身边，等情绪慢慢平复",{C:3,S:1}],["认真听懂你为什么难过",{U:4}],["和你一起找到问题背后的原因",{M:3,U:1}]]},
+  {q:"哪一种礼物最容易让你感动？",a:[["你无意中提过、对方却一直记得的东西",{U:3,S:1}],["亲手准备、记录共同回忆的礼物",{C:3,M:1}],["能真正改善你生活的实用礼物",{S:2,U:2}],["一本书、一张唱片或共同体验",{M:4}]]},
+  {q:"你最希望伴侣具备哪一种能力？",a:[["说到做到，让你能够放心依靠",{S:4}],["愿意花时间稳定地陪伴你",{C:4}],["能觉察并接住你的真实情绪",{U:4}],["能够和你讨论彼此的内心世界",{M:4}]]},
+  {q:"恋爱中，你理想的联系频率是：",a:[["每天都有固定的联系和回应",{S:2,C:2}],["有空就分享日常，不必规定次数",{C:3,U:1}],["不必频繁，但重要事情一定会说",{S:3,M:1}],["比频率更重要的是聊天有深度",{M:3,U:1}]]},
+  {q:"伴侣忘记重要纪念日时，你最难受的是：",a:[["担心自己在对方心里不够重要",{S:3,U:1}],["错过了本来可以一起度过的时刻",{C:4}],["对方没有理解这一天对你的意义",{U:4}],["你们对关系仪式的看法差异太大",{M:3,U:1}]]},
+  {q:"对你来说，安全感最主要来自：",a:[["稳定承诺和清晰的未来计划",{S:4}],["需要时对方总能出现在身边",{C:3,S:1}],["情绪被认真看见而不是否定",{U:3,S:1}],["价值观一致，彼此没有精神距离",{M:3,S:1}]]},
+  {q:"伴侣情绪低落时，你最自然的做法是：",a:[["确认自己会一直陪着对方",{S:2,C:2}],["安静陪伴，照顾对方的生活",{C:4}],["询问对方此刻真正的感受",{U:4}],["陪对方梳理困扰和人生方向",{M:3,U:1}]]},
+  {q:"你最介意伴侣出现哪种情况？",a:[["承诺反复、态度忽冷忽热",{S:4}],["总说忙，很少有时间相处",{C:4}],["认为你的情绪是在无理取闹",{U:4}],["无法交流重要观点和人生想法",{M:4}]]},
+  {q:"关系出现问题时，你首先会：",a:[["确认双方是否还愿意继续走下去",{S:4}],["创造相处机会，让距离重新靠近",{C:3,S:1}],["表达感受并希望彼此真正听懂",{U:4}],["分析关系模式和问题的根源",{M:3,U:1}]]},
+  {q:"你表达爱意最常用的方式是：",a:[["兑现承诺，为未来做实际安排",{S:4}],["留出时间，陪对方做很多小事",{C:4}],["关注细节，照顾对方的情绪",{U:4}],["分享思想、兴趣和内心发现",{M:4}]]},
+  {q:"伴侣和朋友出去玩没有邀请你，你会：",a:[["希望对方提前说明安排，让你心里有数",{S:3,U:1}],["因为少了一次相处机会而失落",{C:4}],["希望对方理解你为何会有些难过",{U:4}],["只要彼此信任、边界一致就不介意",{M:2,S:2}]]},
+  {q:"你最容易被哪类人吸引？",a:[["成熟稳定、行为可靠的人",{S:4}],["温暖热情、愿意陪伴的人",{C:4}],["细腻温柔、共情能力强的人",{U:4}],["思想丰富、能聊到一起的人",{M:4}]]},
+  {q:"面对一段不确定的关系，你更想得到：",a:[["明确的身份与承诺",{S:4}],["持续而真实的相处时间",{C:4}],["坦白的情绪和真实态度",{U:4}],["双方对未来方向的深入交流",{M:4}]]},
+  {q:"伴侣指出你的缺点时，怎样的方式最能让你接受？",a:[["先确认这是为了共同经营关系",{S:3,M:1}],["在温和陪伴的氛围里慢慢谈",{C:3,U:1}],["先理解你的处境，再提出看法",{U:4}],["平等讨论，并允许彼此观点不同",{M:4}]]},
+  {q:"亲密关系中，你认为最重要的是：",a:[["忠诚、责任和长期承诺",{S:4}],["日常参与和高质量陪伴",{C:4}],["情绪理解和彼此接纳",{U:4}],["价值观契合与共同成长",{M:4}]]},
+  {q:"如果双方生活习惯不同，你最希望：",a:[["一起制定稳定、可执行的规则",{S:3,M:1}],["通过更多相处慢慢磨合",{C:3,S:1}],["彼此体谅习惯背后的真实需求",{U:4}],["保留差异，但对原则达成共识",{M:4}]]},
+  {q:"你最害怕关系进入哪种状态？",a:[["对方随时可能离开，却拒绝给出答案",{S:4}],["越来越少见面，彼此退出日常生活",{C:4}],["说了很多，却始终没有被真正听见",{U:4}],["只剩生活琐事，再也没有深度交流",{M:4}]]},
+  {q:"你理想中的爱情最接近：",a:[["确定选择彼此，并一起规划未来",{S:4}],["共享日常，在漫长时间里互相陪伴",{C:4}],["真实表达脆弱，也始终被温柔接住",{U:4}],["灵魂有共鸣，并肩成为更好的人",{M:4}]]}
+];
+
+const profiles={
+  S:{name:"安全感",subtitle:"你最需要的是一段可确认、可依赖、不会轻易消失的关系。",description:"你对爱的感受与“确定性”紧密相连。比起偶尔的浪漫，你更在意对方的态度是否稳定、承诺是否兑现、关系有没有清晰位置。当对方行为一致、愿意公开选择你，并把你放进未来计划时，你才真正放松下来。你并不是天生多疑，而是会通过细节判断这段关系是否安全：回复是否稳定、约定是否被重视、发生冲突时对方会不会突然抽离。对你而言，爱不是一句情绪浓烈的话，而是一种长期不变的行动。",strength:"你最容易从守信、稳定回应、清晰边界和共同规划中感受到爱。你往往认真对待关系，也愿意承担责任。一旦确认彼此可靠，你能够投入很多耐心与忠诚，成为伴侣生活中非常稳定的支持者。",risk:"关系中的模糊、忽冷忽热或临时改变，很容易触发你的警觉。你可能反复确认对方态度，或把短暂的沉默理解成关系正在变坏。如果为了避免失去而压抑需求、过度迁就，安全感反而会越来越依赖对方的即时反应。",advice:"把“我需要你证明爱我”转换成具体可执行的请求，例如固定联系频率、重要安排提前告知、冲突后约定何时继续沟通。与此同时，建立不依赖伴侣的稳定支点：自己的作息、朋友、目标和经济安排。真正稳固的安全感，一半来自可信任的关系，一半来自即使面对变化，你也相信自己有能力照顾好自己。"},
+  C:{name:"陪伴",subtitle:"你最需要的是有人真正参与生活，而不只是口头上爱你。",description:"你判断一段关系是否亲密，主要看彼此有没有共享真实生活。一起吃饭、散步、做家务、经历普通的一天，这些看似平淡的时刻对你有很高的情感价值。你未必要求持续热烈，但希望对方愿意留出时间，让你进入他的日常，也愿意进入你的世界。对你而言，“我在这里”常常比“我爱你”更有力量。陪伴让你确认自己不是被放在生活边缘，而是关系中真正重要的一部分。",strength:"你最容易从共同时间、主动靠近、身体在场和日常参与中感受到爱。你擅长用行动营造温度，也愿意在伴侣疲惫或低落时安静守候。你的存在常常能让关系从抽象承诺落回真实生活。",risk:"当对方忙碌、需要独处或表达方式偏理性时，你可能把时间减少等同于感情变淡。为了获得陪伴，你也可能牺牲自己的安排，久而久之产生不平衡感。人在身边并不等于真正连接；如果只追求相处时长，反而容易忽略相处质量。",advice:"不要只说“你都不陪我”，而要提出具体场景，例如每周一个不看手机的晚上、每天睡前十分钟交流。区分“需要陪伴”和“害怕独处”，保留自己的兴趣与社交，让相聚是主动选择而不是相互捆绑。衡量陪伴时，同时观察时间、专注度和情绪参与三个部分。"},
+  U:{name:"理解",subtitle:"你最需要的不是被分析或纠正，而是被看见、听懂和接纳。",description:"你的核心关系需求是情绪上的“被理解”。当你分享感受时，你希望对方先进入你的处境，而不是马上告诉你应该怎么做。对你而言，亲密意味着不必隐藏脆弱，也不用把所有情绪解释得完全合理。一个准确的回应、一句“我明白你为什么难过”，可能比礼物和建议更能让你感受到爱。你在意的不只是对方是否听见语言，而是他有没有听见语言背后的需要。",strength:"你最容易从共情回应、细节关注、情绪接纳和温柔确认中感受到爱。你通常具有较强的情绪感知力，也很容易察觉伴侣没有说出口的变化。关系状态良好时，你能够创造很深的信任与心理亲密。",risk:"你可能期待对方自动读懂暗示，当对方理解不准确时便感到失望。情绪敏感也容易让你过度解读语气和细节。如果每一次分歧都被体验成“不被理解”，双方会越来越不敢表达不同意见。理解你并不等于对方必须同意你。",advice:"练习用“发生了什么—我感到什么—我需要什么”的结构表达，例如“计划突然改变时我有点失落，我希望你先安慰我，再讨论解决办法”。明确告诉伴侣你此刻需要倾听、拥抱还是建议。同时允许对方通过提问来理解你，而不是要求一次猜中。真正的理解，是双方愿意持续靠近彼此的经验。"},
+  M:{name:"精神交流",subtitle:"你最需要的是思想被回应、内心被进入，并和一个人共同成长。",description:"你渴望的亲密不止是相处和照顾，更是一种精神层面的共鸣。你希望能与伴侣讨论价值观、兴趣、人生选择和内心变化，也希望彼此能够带来新的视角。对你来说，能否聊得深入、能否尊重差异、能否在成长方向上互相启发，会直接决定关系的吸引力。当一段关系只剩下生活安排而缺少思想交换时，即使表面稳定，你也可能感到孤独。",strength:"你最容易从深度对话、共同兴趣、价值观契合和彼此启发中感受到爱。你尊重独立人格，也愿意和伴侣一起反思关系、探索世界。你追求的通常不是完全相同，而是即使不同也能彼此好奇。",risk:"你可能过度追求“灵魂伴侣式”的完美共鸣，对日常照顾和朴素陪伴估值不足。观点不一致时，也可能迅速怀疑两个人是否适合。深度交流不能替代责任、行动和现实磨合；有些爱并不擅长用漂亮的语言表达。",advice:"建立固定的深度交流空间，例如每周分享一次最近的困惑、发现或长期计划。同时观察伴侣是否愿意理解，而不只看他是否与你观点一致。把精神共鸣落实到共同经历和现实行动里，让思想连接成为关系的营养，而不是筛选对方的高压考试。"}
+};
+
+const hybridProfiles={
+  CS:{name:"安全感＋陪伴",subtitle:"你需要确定的选择，也需要真实而持续的在场。",description:"对你来说，承诺只有进入日常才真正可信。稳定联系、固定见面和共同规划，会让你确认自己不仅被喜欢，也被认真放进了对方的生活。你既害怕关系摇摆，也害怕在一段有名分的关系里依然孤独。",strength:"你从稳定回应、共同时间和持续参与中感受爱，也愿意用长期陪伴证明自己的认真。",risk:"对方偶尔忙碌或需要空间时，你可能同时感到被冷落和关系不稳，从而加倍索取回应。",advice:"同时约定关系底线与相处节奏：哪些事情必须告知、每周需要多少高质量时间。稳定不是时时黏在一起，而是即使暂时分开，也知道何时会重新连接。"},
+  SU:{name:"安全感＋理解",subtitle:"你需要明确的关系，也需要情绪在关系里拥有安全位置。",description:"只有承诺而没有共情，对你而言仍然不够安全。你希望伴侣不仅选择你，也能在你脆弱、焦虑或敏感时不否定你。当对方态度清晰并愿意理解你的反应，你才会真正卸下防备。",strength:"你重视忠诚与情绪诚实，关系稳定后通常能给予伴侣深度信任和温柔支持。",risk:"你可能频繁通过情绪反应测试对方是否在乎，或将理解不足直接等同于爱得不够。",advice:"把抽象确认拆成两类请求：事实层面的承诺，以及情绪层面的回应。允许伴侣不完全懂，但要求他愿意听、愿意问、愿意留下来。"},
+  MS:{name:"安全感＋精神交流",subtitle:"你需要方向一致，也需要一段可以长期对话的关系。",description:"你希望这段关系既有稳定未来，也有思想生命力。明确承诺让你安心，而价值观契合和共同成长让你相信两个人能走得长久。只有浪漫却没有方向，或只有责任却没有交流，都会让你觉得不完整。",strength:"你既能考虑现实，也重视关系的长期成长，适合共同制定目标并持续复盘关系。",risk:"你可能把每一次观点差异都上升到未来不确定，或过早要求对方给出完整人生答案。",advice:"区分“核心原则”和“可变化观点”。对原则建立共识，对观点保持好奇；用阶段性计划代替要求一次确定整个人生。"},
+  CU:{name:"陪伴＋理解",subtitle:"你需要有人在身边，也需要这个人真正懂你为何需要他。",description:"你渴望的是有情绪质量的陪伴。单纯待在同一空间并不足够，你希望相处中有专注、回应和温柔。对方愿意放下手机听你说话、察觉你的变化，会让你感到自己被珍惜。",strength:"你擅长营造亲密氛围，也容易给予伴侣细致、柔软而持续的情感照顾。",risk:"当对方在场却心不在焉时，你会格外受伤；也可能为了维持连接而忽略自己的独处需要。",advice:"把陪伴设计成有质量的仪式：明确时间、减少干扰、轮流分享。也为自己保留恢复能量的空间，避免让伴侣承担全部情绪出口。"},
+  CM:{name:"陪伴＋精神交流",subtitle:"你需要一起生活，也需要一起探索世界。",description:"你理想的爱既有烟火气，也有共同话题。你希望能一起经历事情、分享兴趣，并在相处中不断发现彼此。只有聊天没有行动显得飘，只有日常没有交流又显得空。",strength:"你很适合通过共同体验维持关系活力，也能让平凡相处产生丰富记忆。",risk:"当生活进入重复期，你可能误以为感情失去吸引力，继而不断追求新鲜刺激。",advice:"建立共同项目，例如旅行计划、阅读、运动或学习，同时保留各自兴趣。新鲜感不一定来自换一个人，也可以来自两个人持续更新自己。"},
+  MU:{name:"理解＋精神交流",subtitle:"你需要被读懂，也需要思想与内心都能被认真回应。",description:"你追求高度的心理亲密。你希望对方既能理解情绪，也能和你讨论情绪背后的价值观、成长经历与人生选择。浅层安慰可能让你觉得不够，而真正深入的对话会让你产生强烈连接。",strength:"你有能力建立非常深的关系，重视真诚、自我觉察和持续成长，也愿意理解伴侣复杂的内心。",risk:"你可能对交流深度要求过高，让对方觉得每次谈话都像一次心理考试；也可能忽略不善表达者的行动式关心。",advice:"深度交流之外，也允许关系拥有轻松和沉默。把“懂我”变成共同探索，而不是一次答对；同时学习识别语言之外的爱意表达。"}
+};
+
+const order=["S","C","U","M"];
+const labels={S:"安全感",C:"陪伴",U:"理解",M:"精神交流"};
+const colors={S:"#ef6d75",C:"#a9d8c3",U:"#e9b96e",M:"#d9c7f4"};
+let current=0,answers=Array(questions.length).fill(null);
+const $=id=>document.getElementById(id);
+function showScreen(id){document.querySelectorAll(".screen").forEach(el=>el.classList.remove("active"));$(id).classList.add("active");window.scrollTo({top:0,behavior:"smooth"});}
+function renderQuestion(){const item=questions[current];$("progressText").textContent=`${String(current+1).padStart(2,"0")} / ${questions.length}`;$("progressBar").style.width=`${(current+1)/questions.length*100}%`;$("questionNumber").textContent=`QUESTION ${String(current+1).padStart(2,"0")}`;$("questionText").textContent=item.q;$("options").innerHTML="";item.a.forEach((option,index)=>{const b=document.createElement("button");b.className=`option${answers[current]===index?" selected":""}`;b.setAttribute("role","radio");b.setAttribute("aria-checked",answers[current]===index?"true":"false");b.innerHTML=`<span class="option-key">${String.fromCharCode(65+index)}</span><span>${option[0]}</span>`;b.addEventListener("click",()=>selectOption(index));$("options").appendChild(b);});$("prevButton").disabled=current===0;$("nextButton").disabled=answers[current]===null;$("nextButton").textContent=current===questions.length-1?"提交测试 →":"下一题 →";}
+function selectOption(index){answers[current]=index;renderQuestion();if(current<questions.length-1)setTimeout(()=>{current++;renderQuestion();},260);}
+function scores(){const s={S:0,C:0,U:0,M:0};answers.forEach((v,i)=>Object.entries(questions[i].a[v][1]).forEach(([k,n])=>s[k]+=n));return s;}
+function renderResult(){const s=scores(),rank=Object.entries(s).sort((a,b)=>b[1]-a[1]),[first,second]=rank,isHybrid=first[1]-second[1]<=3||first[1]/80<.27,key=[first[0],second[0]].sort().join(""),p=isHybrid?hybridProfiles[key]:profiles[first[0]],pct=Math.round(first[1]/80*100);$("resultTitle").textContent=p.name;$("resultSubtitle").textContent=isHybrid?`${p.subtitle} 你的第一需求是${labels[first[0]]}，第二需求是${labels[second[0]]}。`:p.subtitle;$("resultDescription").textContent=p.description;$("resultStrength").textContent=p.strength;$("resultRisk").textContent=p.risk;$("resultAdvice").textContent=p.advice;$("topPercent").textContent=`${pct}%`;let start=0;const stops=order.map(k=>{const end=start+s[k]/80*100,x=`${colors[k]} ${start}% ${end}%`;start=end;return x;});$("donutChart").style.background=`conic-gradient(${stops.join(",")})`;$("scoreLegend").innerHTML=order.map(k=>`<div class="legend-row"><span class="legend-dot" style="background:${colors[k]}"></span><span>${labels[k]}</span><strong>${Math.round(s[k]/80*100)}%</strong></div>`).join("");showScreen("resultScreen");window.__latestResult={name:p.name,primary:labels[first[0]],secondary:labels[second[0]]};}
+$("startButton").addEventListener("click",()=>{current=0;answers.fill(null);renderQuestion();showScreen("quizScreen");});$("closeButton").addEventListener("click",()=>showScreen("startScreen"));$("prevButton").addEventListener("click",()=>{if(current>0){current--;renderQuestion();}});$("nextButton").addEventListener("click",()=>{if(answers[current]===null)return;if(current===questions.length-1)renderResult();else{current++;renderQuestion();}});$("restartButton").addEventListener("click",()=>{current=0;answers.fill(null);renderQuestion();showScreen("quizScreen");});$("shareButton").addEventListener("click",async()=>{const r=window.__latestResult,text=`我在亲密关系中最需要「${r.name}」！第一需求：${r.primary}，第二需求：${r.secondary}。你最需要什么？`;try{await navigator.clipboard.writeText(text);}catch{const a=document.createElement("textarea");a.value=text;document.body.appendChild(a);a.select();document.execCommand("copy");a.remove();}$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),1800);});
+
+</script>
+</body>
+</html>
+
+
