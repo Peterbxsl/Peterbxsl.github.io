@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="用20道轻松小题，发现你的消费人格与花钱习惯。" />
+  <title>你的消费人格是哪一种？</title>
+  <style>
+:root {
+  --ink: #2e2531;
+  --muted: #7c6f7c;
+  --paper: #fffaf6;
+  --rose: #ef6d75;
+  --rose-dark: #d94f5a;
+  --peach: #ffc3a3;
+  --lavender: #d9c7f4;
+  --mint: #a9d8c3;
+  --gold: #e9b96e;
+  --line: rgba(62, 43, 58, .11);
+  --shadow: 0 24px 70px rgba(100, 57, 72, .16);
+}
+
+* { box-sizing: border-box; }
+html { min-height: 100%; background: #f8eee9; }
+body {
+  margin: 0; min-height: 100vh; color: var(--ink);
+  font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 15% 8%, rgba(255,255,255,.9), transparent 25%),
+    linear-gradient(145deg, #fae8df 0%, #f4eef5 53%, #e8f2ec 100%);
+  overflow-x: hidden;
+}
+button { font: inherit; }
+.ambient { position: fixed; border-radius: 50%; filter: blur(8px); opacity: .55; pointer-events: none; }
+.ambient-one { width: 320px; height: 320px; right: -110px; top: -90px; background: #ffd3bd; }
+.ambient-two { width: 260px; height: 260px; left: -100px; bottom: -80px; background: #cdb9e9; }
+.shell { width: min(100% - 32px, 900px); margin: 0 auto; padding: 28px 0 56px; position: relative; z-index: 1; }
+.brand { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; letter-spacing: .08em; }
+.brand-mark { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: white; background: var(--ink); font-family: Georgia, serif; }
+.screen { display: none; animation: fadeUp .45s ease both; }
+.screen.active { display: block; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+.start-screen { text-align: center; padding-top: clamp(50px, 10vh, 100px); }
+.eyebrow, .result-kicker { display: inline-block; padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.9); color: var(--rose-dark); font-size: 13px; font-weight: 700; letter-spacing: .08em; }
+h1 { font-family: Georgia, "Songti SC", serif; font-size: clamp(42px, 8vw, 74px); line-height: 1.05; margin: 24px 0 18px; letter-spacing: -.04em; }
+h1 em { font-style: normal; color: var(--rose); }
+.lead { max-width: 540px; margin: auto; color: var(--muted); line-height: 1.8; }
+.preview-card { position: relative; width: 230px; height: 150px; margin: 44px auto 36px; }
+.mini-card { position: absolute; inset: 0; border-radius: 24px; }
+.card-back { background: var(--lavender); transform: rotate(-7deg); }
+.card-front { display: flex; flex-direction: column; justify-content: center; gap: 8px; background: rgba(255,255,255,.87); border: 1px solid white; box-shadow: var(--shadow); transform: rotate(3deg); }
+.card-front span { color: var(--muted); font-size: 12px; }
+.card-front strong { font-family: Georgia, "Songti SC", serif; font-size: 24px; }
+.sparkles { color: var(--gold); }
+.primary-button, .secondary-button { min-height: 52px; border: 0; border-radius: 16px; padding: 0 24px; font-weight: 750; cursor: pointer; transition: .2s ease; }
+.primary-button { color: white; background: var(--ink); box-shadow: 0 12px 26px rgba(46,37,49,.2); }
+.primary-button:hover:not(:disabled) { transform: translateY(-2px); background: #171118; }
+.primary-button:disabled { opacity: .35; cursor: not-allowed; box-shadow: none; }
+.primary-button span { margin-left: 18px; }
+.secondary-button { color: var(--ink); background: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.9); }
+.secondary-button:hover:not(:disabled) { background: white; }
+.secondary-button:disabled { opacity: .35; cursor: not-allowed; }
+.privacy { margin-top: 18px; color: #998c96; font-size: 12px; }
+
+.quiz-screen { padding-top: 34px; }
+.quiz-topline { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; color: var(--muted); font-size: 13px; font-weight: 700; }
+.icon-button { justify-self: start; width: 38px; height: 38px; border: 1px solid rgba(255,255,255,.9); background: rgba(255,255,255,.5); border-radius: 50%; font-size: 22px; color: var(--muted); cursor: pointer; }
+.quiet-badge { justify-self: end; }
+.progress-track { height: 5px; background: rgba(255,255,255,.62); border-radius: 9px; margin: 18px 0 28px; overflow: hidden; }
+.progress-track div { height: 100%; width: 5%; border-radius: inherit; background: linear-gradient(90deg, var(--rose), var(--gold)); transition: width .35s ease; }
+.question-card { min-height: 470px; padding: clamp(26px, 6vw, 56px); border-radius: 32px; background: rgba(255,250,246,.82); border: 1px solid rgba(255,255,255,.9); box-shadow: var(--shadow); backdrop-filter: blur(16px); }
+.question-number { color: var(--rose-dark); font-size: 12px; font-weight: 800; letter-spacing: .15em; }
+.question-card h2 { max-width: 680px; margin: 16px 0 30px; font-family: Georgia, "Songti SC", serif; font-size: clamp(26px, 4vw, 38px); line-height: 1.4; }
+.options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.option { display: flex; align-items: center; gap: 14px; min-height: 68px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.72); color: var(--ink); text-align: left; cursor: pointer; transition: .2s ease; }
+.option:hover { transform: translateY(-2px); border-color: rgba(239,109,117,.45); box-shadow: 0 8px 20px rgba(80,48,62,.08); }
+.option.selected { border-color: var(--rose); background: #fff1ec; box-shadow: inset 0 0 0 1px var(--rose); }
+.option-key { flex: 0 0 auto; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: #f2e9e6; font-family: Georgia, serif; font-weight: 700; }
+.option.selected .option-key { color: white; background: var(--rose); }
+.navigation { display: flex; justify-content: space-between; gap: 14px; margin-top: 20px; }
+.small { min-width: 138px; }
+
+.result-screen { padding-top: 58px; text-align: center; }
+.result-screen h1 { margin: 18px 0 10px; color: var(--rose-dark); }
+.result-subtitle { max-width: 620px; margin: 0 auto 34px; color: var(--muted); font-size: 17px; line-height: 1.7; }
+.result-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; text-align: left; }
+.chart-card, .insight-card, .advice-grid article { background: rgba(255,250,246,.82); border: 1px solid white; border-radius: 26px; box-shadow: 0 15px 40px rgba(95,61,72,.09); }
+.chart-card { display: flex; align-items: center; gap: 28px; padding: 28px; }
+.donut { flex: 0 0 auto; display: grid; place-items: center; width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(var(--rose) 0 25%, var(--mint) 25% 50%, var(--gold) 50% 75%, var(--lavender) 75%); position: relative; }
+.donut::after { content: ""; position: absolute; inset: 16px; border-radius: 50%; background: var(--paper); }
+.donut div { z-index: 1; text-align: center; }
+.donut strong { display: block; font-family: Georgia, serif; font-size: 28px; }
+.donut span { color: var(--muted); font-size: 11px; }
+.score-legend { flex: 1; display: grid; gap: 10px; }
+.legend-row { display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 8px; font-size: 13px; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; }
+.legend-row span:nth-child(2) { color: var(--muted); }
+.insight-card { padding: 30px; }
+.insight-label, .advice-grid article span { display: block; margin-bottom: 14px; color: var(--rose-dark); font-size: 12px; font-weight: 800; letter-spacing: .1em; }
+.insight-card p, .advice-grid p { margin: 0; line-height: 1.85; color: #5f535d; }
+.advice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; text-align: left; }
+.advice-grid article { padding: 26px; }
+.advice-grid .wide { grid-column: 1 / -1; background: var(--ink); }
+.advice-grid .wide span { color: var(--peach); }
+.advice-grid .wide p { color: #fff9f5; }
+.result-actions { display: flex; justify-content: center; gap: 14px; margin-top: 28px; }
+.toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 20px); padding: 12px 18px; color: white; background: var(--ink); border-radius: 999px; opacity: 0; pointer-events: none; transition: .3s; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (max-width: 680px) {
+  .shell { width: min(100% - 22px, 900px); padding-top: 18px; }
+  .start-screen { padding-top: 45px; }
+  .options, .result-grid, .advice-grid { grid-template-columns: 1fr; }
+  .question-card { min-height: 0; padding: 26px 18px; border-radius: 25px; }
+  .question-card h2 { min-height: 78px; margin-bottom: 22px; }
+  .option { min-height: 60px; }
+  .chart-card { flex-direction: column; text-align: center; }
+  .score-legend { width: 100%; }
+  .advice-grid .wide { grid-column: auto; }
+  .result-actions { flex-direction: column-reverse; }
+  .result-actions button { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+</style>
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <main class="shell">
+    <header class="brand" aria-label="消费人格实验室">
+      <span class="brand-mark">¥</span>
+      <span>消费人格实验室</span>
+    </header>
+
+    <section id="startScreen" class="screen start-screen active">
+      <div class="eyebrow">20 道题 · 约 3 分钟</div>
+      <h1>你的消费人格<br><em>是哪一种？</em></h1>
+      <p class="lead">每一次下单，都藏着你对安全感、快乐和理想生活的选择。</p>
+      <div class="preview-card" aria-hidden="true">
+        <div class="mini-card card-back"></div>
+        <div class="mini-card card-front">
+          <span>你的金钱观关键词</span>
+          <strong>等待揭晓</strong>
+          <div class="sparkles">✦　✧　✦</div>
+        </div>
+      </div>
+      <button id="startButton" class="primary-button">开始测试 <span>→</span></button>
+      <p class="privacy">答案仅用于本次测试，不会上传或保存</p>
+    </section>
+
+    <section id="quizScreen" class="screen quiz-screen">
+      <div class="quiz-topline">
+        <button id="closeButton" class="icon-button" aria-label="返回开始页">×</button>
+        <span id="progressText">01 / 20</span>
+        <span class="quiet-badge">凭直觉选</span>
+      </div>
+      <div class="progress-track" aria-hidden="true"><div id="progressBar"></div></div>
+      <article class="question-card">
+        <div id="questionNumber" class="question-number">QUESTION 01</div>
+        <h2 id="questionText"></h2>
+        <div id="options" class="options" role="radiogroup" aria-label="答案选项"></div>
+      </article>
+      <div class="navigation">
+        <button id="prevButton" class="secondary-button">← 上一题</button>
+        <button id="nextButton" class="primary-button small" disabled>下一题 →</button>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen result-screen">
+      <div class="result-kicker">你的消费人格是</div>
+      <h1 id="resultTitle"></h1>
+      <p id="resultSubtitle" class="result-subtitle"></p>
+
+      <div class="result-grid">
+        <div class="chart-card">
+          <div class="donut" id="donutChart"><div><strong id="topPercent">0%</strong><span>核心倾向</span></div></div>
+          <div id="scoreLegend" class="score-legend"></div>
+        </div>
+        <div class="insight-card">
+          <span class="insight-label">消费画像</span>
+          <p id="resultDescription"></p>
+        </div>
+      </div>
+
+      <div class="advice-grid">
+        <article><span>你的优势</span><p id="resultStrength"></p></article>
+        <article><span>需要留意</span><p id="resultRisk"></p></article>
+        <article class="wide"><span>给你的消费建议</span><p id="resultAdvice"></p></article>
+      </div>
+
+      <div class="result-actions">
+        <button id="restartButton" class="secondary-button">重新测试</button>
+        <button id="shareButton" class="primary-button small">复制结果文案</button>
+      </div>
+      <div id="toast" class="toast" role="status">结果已复制</div>
+    </section>
+  </main>
+  <script>
+const questions = [
+  { q: "发工资后的第一件事通常是：", a: [["先存一部分",{S:4}],["还账单",{R:3,S:1}],["买想要很久的东西",{Q:2,E:2}],["没有固定安排",{E:3,Q:1}]] },
+  { q: "看到“限时优惠”时，你会：", a: [["立即下单",{E:4}],["对比价格后决定",{R:4}],["先加入购物车",{R:3,E:1}],["基本不受影响",{S:3,R:1}]] },
+  { q: "购买早餐时，你更倾向于：", a: [["便宜管饱",{S:3,R:1}],["营养健康",{Q:3,R:1}],["好看又好吃",{E:2,Q:2}],["每天换不同口味",{Q:3,E:1}]] },
+  { q: "你最愿意在哪方面多花钱？", a: [["吃喝",{Q:3,E:1}],["穿搭护肤",{E:3,Q:1}],["旅行体验",{Q:4}],["学习和兴趣",{R:2,Q:2}]] },
+  { q: "买到不合适的商品后，你通常：", a: [["马上退货",{R:4}],["转送给别人",{Q:2,E:2}],["留着以后再用",{S:3,R:1}],["闲置后忘记",{E:4}]] },
+  { q: "朋友推荐一款贵价商品时，你会：", a: [["相信朋友直接买",{E:3,Q:1}],["先看网上评价",{R:4}],["找平价替代品",{S:2,R:2}],["没有需要就不买",{S:4}]] },
+  { q: "你会为了赠品购买商品吗？", a: [["经常会",{E:4}],["偶尔会",{E:3,Q:1}],["赠品实用才会",{R:3,S:1}],["基本不会",{S:3,R:1}]] },
+  { q: "外出吃饭时，你更关注：", a: [["价格",{S:3,R:1}],["味道",{Q:4}],["环境",{Q:2,E:2}],["新鲜感",{E:3,Q:1}]] },
+  { q: "购物车里的商品，你通常会：", a: [["当天结算",{E:4}],["等到促销再买",{R:3,S:1}],["反复考虑很久",{R:2,S:2}],["放着放着就不想买了",{S:3,R:1}]] },
+  { q: "如果突然得到1000元，你最可能：", a: [["全部存起来",{S:4}],["买一件喜欢的东西",{E:2,Q:2}],["请朋友或家人吃饭",{Q:3,E:1}],["用来旅行或体验",{Q:4}]] },
+  { q: "购买大件商品前，你会：", a: [["做详细攻略",{R:4}],["选择熟悉的品牌",{S:2,Q:2}],["听取亲友建议",{R:2,S:1,Q:1}],["凭感觉决定",{E:4}]] },
+  { q: "你如何看待分期付款？", a: [["坚决不用",{S:4}],["必要时使用",{R:3,S:1}],["免息就可以用",{R:4}],["经常使用",{E:3,Q:1}]] },
+  { q: "逛街时遇到特别喜欢但很贵的东西，你会：", a: [["咬牙买下",{E:3,Q:1}],["回家考虑几天",{R:3,S:1}],["等待降价",{S:2,R:2}],["欣赏一下就离开",{S:4}]] },
+  { q: "你是否会记录日常开销？", a: [["每笔都记录",{R:4}],["只记录大额支出",{R:3,S:1}],["偶尔想起来才记",{E:2,R:2}],["从来不记",{E:4}]] },
+  { q: "你更愿意为哪种价值付费？", a: [["节省时间",{Q:3,R:1}],["提升品质",{Q:4}],["获得快乐",{E:3,Q:1}],["展现个性",{E:4}]] },
+  { q: "一次冲动消费后，你通常会：", a: [["立即后悔",{E:3,S:1}],["给自己找理由",{E:4}],["开心就觉得值得",{Q:2,E:2}],["很少冲动消费",{R:2,S:2}]] },
+  { q: "朋友约你去一家人均较高的餐厅，你会：", a: [["爽快答应",{E:2,Q:2}],["看预算再决定",{R:3,S:1}],["建议换一家",{S:3,R:1}],["如果值得体验就去",{Q:3,R:1}]] },
+  { q: "你更容易为什么下单？", a: [["实际需要",{R:3,S:1}],["情绪不好",{E:4}],["博主推荐",{E:3,Q:1}],["商品足够特别",{Q:2,E:2}]] },
+  { q: "如果某样东西坏了，你会：", a: [["立即换新",{Q:2,E:2}],["尝试维修",{S:3,R:1}],["继续凑合使用",{S:4}],["比较维修和换新的成本",{R:4}]] },
+  { q: "你对金钱的总体态度更接近：", a: [["钱带来安全感",{S:4}],["钱应该用来享受",{E:2,Q:2}],["钱要花在值得的地方",{R:2,Q:2}],["钱只是生活工具",{R:3,S:1}]] }
+];
+
+const profiles = {
+  S: { name:"安全感守护者", short:"安全储蓄型", color:"#ef6d75", subtitle:"你用克制与储蓄，为未来留出从容的底气。", description:"对你来说，钱首先是一道保护生活的防线，其次才是获得快乐的工具。消费前，你会本能地想到未来是否还有更重要的用途，也更愿意为了稳定感推迟当下满足。你并非不懂享受，而是只有在确认“不会影响以后”时，才真正花得安心。账户余额、应急储备和可控的生活节奏，会直接影响你的安全感。", strength:"你有较强的延迟满足能力，不容易被促销、攀比和短期情绪牵着走。面对突发支出时，你通常比别人更有准备；在长期储蓄、控制负债和坚持财务目标方面，也更容易保持稳定。你的消费往往经过筛选，因此买回来的东西通常更接近真实需求。", risk:"你可能把“少花钱”误当成“最正确的选择”，即使预算允许，也容易在正常消费后感到内疚。长期压抑需求可能造成补偿性消费，或者让你为了节省小钱投入过多时间。你也可能低估健康、体验和效率带来的长期价值。", advice:"先建立3—6个月的应急储备，再为每月收入设置一笔5%—10%的“安心享受金”。这笔钱只能用于让生活更舒适的事情，不必事后自责。面对较大消费，可同时问自己：它会不会影响安全底线？它能否持续改善生活？只要前者是否、后者是，就允许自己购买。" },
+  R: { name:"清醒决策家", short:"理性规划型", color:"#a9d8c3", subtitle:"你的每一笔消费，都有一套清晰的判断逻辑。", description:"你的消费决策很像一个小型评估过程：是否需要、使用频率如何、价格是否合理、有没有更好的替代品。你不是单纯追求低价，而是在寻找成本与价值之间最舒服的平衡。相比“买到的瞬间有多开心”，你更在意“过一段时间后是否仍觉得值得”。掌控感和确定性，是你消费时的重要心理需求。", strength:"你擅长识别营销话术，也能把复杂选择拆解成具体标准。你的预算通常较有秩序，冲动购买和闲置浪费相对较少。购买大件、长期服务或高频用品时，你的研究能力尤其有价值，常常能兼顾品质、价格和后续使用成本。", risk:"当信息太多时，你容易陷入比较循环：为了找到“最优解”反复查攻略、等待更低价格，甚至错过真正需要的时机。你也可能过度重视可量化的性价比，而忽略审美、便利和情绪满足同样是合理价值。", advice:"把消费分成三级：小额日常消费用“60秒决定”，中等消费最多比较3个选项，大额消费再做完整攻略。购买前写下三个必须满足的条件，达到条件就停止搜索。把时间成本也算进价格里，避免为了节省几十元消耗几个小时。" },
+  Q: { name:"生活投资家", short:"品质体验型", color:"#e9b96e", subtitle:"你相信，好的体验本身就是生活的回报。", description:"你衡量一笔消费时，不只看商品本身，也会看它能否提升舒适度、效率、审美或记忆价值。美食、旅行、健康、学习和优质服务对你而言不是单纯支出，而是把钱转化成生活质量。你愿意为真正喜欢的东西付出溢价，并且常常能从体验中获得持久满足。", strength:"你对品质和体验有较敏锐的判断，懂得把资源投入到真正影响幸福感的地方。与单纯追求便宜相比，你更关注长期使用感和综合价值，因此在高频用品、健康投入、学习成长和重要体验上，往往能作出更成熟的选择。", risk:"“提升生活品质”很容易成为持续升级消费的理由。品牌氛围、精致包装和社交平台展示，可能让你把向往的生活投射到商品上。单件消费看起来都合理，累积起来却可能挤压储蓄，甚至产生“只有消费才能过好生活”的错觉。", advice:"建立“体验回报率”：购买后记录使用次数、满意程度和是否愿意再次购买。高价商品至少满足高频使用、长期耐用、明显改善体验中的两项。每月保留品质预算，但同一类别实行“一进一出”，让升级真正带来改善，而不是增加拥有量。" },
+  E: { name:"快乐感受家", short:"情绪悦己型", color:"#d9c7f4", subtitle:"花钱对你而言，也是一种表达、奖励与疗愈。", description:"消费对你不仅是获得物品，也是一种快速回应情绪的方式。开心时你愿意庆祝，疲惫时想奖励自己，低落时则可能通过下单重新获得掌控感。颜值、氛围、新鲜感和“这很像我”的感觉，很容易击中你。你追求的往往不是物品本身，而是它代表的心情、身份和理想中的自己。", strength:"你有很强的感受力与自我表达欲，懂得发现生活中的新鲜事，也愿意通过消费为日常增加仪式感。你通常不吝啬为自己和重要的人制造快乐，在审美、趋势和个性选择上也更有直觉。", risk:"情绪高点或低点都可能降低你的判断门槛，使“现在很想要”被误认为“真的需要”。即时满足消退后，容易出现闲置、后悔和账单压力；如果习惯用购物安抚情绪，还可能忽视疲惫、孤独或压力等真正需要处理的问题。", advice:"为非必需品设置24小时冷静期，并在下单前标记当下情绪：开心、疲惫、焦虑还是无聊。如果购买主要是为了改变心情，先尝试一种零消费替代方案。每月设定明确的悦己额度，额度内放心享受，超出后延迟到下个月再决定。" }
+};
+
+const hybridProfiles = {
+  RS: { name:"稳健规划家", subtitle:"安全感是底线，理性判断是你的消费工具。", description:"你既需要稳定的财务基础，也习惯用比较和规划来控制风险。你不会仅仅因为便宜而购买，更看重一笔钱是否花得合理、是否符合长期安排。消费前的研究会让你安心，而清晰的预算则让你保持掌控感。", strength:"储蓄纪律与决策能力兼具，通常能避开冲动消费和高风险负债，也擅长为大额目标持续准备。", risk:"过于追求稳妥和最优方案，可能让你在小额选择上消耗过多精力，或因为害怕买错而压抑合理需求。", advice:"给不同金额设置决策时限，并提前划出无需解释的自由消费额度。预算范围内，只要满足核心条件就可以停止比较。" },
+  QS: { name:"克制品质派", subtitle:"你愿意为好东西买单，但必须先确认它真的值得。", description:"你并不排斥高价与享受，只是希望每一笔品质消费都有充分理由。你倾向于少买、买好、用久，把安全感与生活质感放在同一个天平上。对你而言，真正理想的消费不是最便宜，而是长期满意且不会造成财务压力。", strength:"能够兼顾储蓄和生活质量，重视耐用性与长期价值，较少因为追逐数量造成浪费。", risk:"你可能为“买一步到位”支付过高溢价，也可能在节省和享受之间反复纠结，降低消费后的满足感。", advice:"高价购买前计算预计使用次数与单次成本，同时设置可承受的品质预算。达到使用频率标准后，就允许自己享受，不再反复评判。" },
+  ES: { name:"理性与冲动拉扯型", subtitle:"你一边想及时快乐，一边又很在意花钱后的安全感。", description:"你的消费常在两个声音之间摇摆：一个希望立刻满足当下情绪，另一个担心余额减少和未来风险。你可能在克制很久后突然集中消费，也可能下单时兴奋、付款后很快后悔。问题并非意志力不足，而是安全需求与情绪需求还没有各自的出口。", strength:"你既能感受到生活乐趣，也具备风险意识；只要建立合适规则，就很有机会形成既不压抑、也不失控的消费方式。", risk:"“压抑—爆发—后悔—再次压抑”的循环，会放大消费焦虑，也容易让你对金钱形成负面感受。", advice:"把收入自动分成储蓄账户和悦己账户。悦己额度内不追责，额度用完则暂停非必需消费；这样既保护未来，也不用靠长期忍耐维持秩序。" },
+  QR: { name:"精明品质家", subtitle:"你追求的不是低价，而是经得起推敲的好体验。", description:"你愿意为品质付费，但下单前会认真确认性能、口碑、使用频率和替代方案。你擅长把感性的生活追求转化成理性的选择标准，因此既能享受好东西，也不容易被表面包装说服。", strength:"兼具审美、体验意识与分析能力，在大件、高频用品和长期服务上，通常能作出高质量决策。", risk:"你可能花大量时间研究细微差异，也可能用复杂论证合理化原本超出预算的品质升级。", advice:"购买前先确定最高预算与三个核心需求，再进行比较；不要在看过商品之后不断抬高标准。购买后用真实使用反馈替代继续搜索。" },
+  ER: { name:"计划型悦己派", subtitle:"你喜欢即时快乐，也愿意为快乐划定清晰边界。", description:"你并不抗拒冲动和新鲜感，但内心仍希望消费保持秩序。状态好时，你能用预算把悦己安排得恰到好处；压力大时，规则则可能暂时失效。你的关键不是彻底消除冲动，而是让快乐消费变得可预期。", strength:"既有生活热情，也有调整能力。相比完全凭感觉消费，你更容易通过简单规则恢复平衡。", risk:"容易出现“既然做了计划就可以放心买”的心理，从而把预算当成必须花完的指标；情绪强烈时也可能突破原有上限。", advice:"设置每周而非每月的悦己额度，降低一次性花完的概率。冲动商品先进入愿望清单，固定每周挑选一件最想要的，而不是逐件即时下单。" },
+  EQ: { name:"体验享乐家", subtitle:"你最舍得把钱换成快乐、记忆和理想生活。", description:"你高度重视消费带来的感受价值。无论是一顿好饭、一次旅行，还是设计独特的物品，只要能带来快乐和故事，你就愿意付费。你既追求品质，也容易被新鲜感和氛围打动，消费是你探索世界和表达自己的重要方式。", strength:"感受力丰富、生活热情高，善于通过消费创造体验，也很懂得为自己和身边人制造幸福时刻。", risk:"品质需求与情绪需求叠加后，几乎每次消费都显得“很值得”，导致预算边界模糊、重复体验增多。", advice:"分别设置体验预算和物品预算，避免互相挤占。消费后记录“快乐持续了多久”，优先保留能形成长期记忆或被高频使用的项目。" }
+};
+const dimensionOrder = ["S","R","Q","E"];
+const labels = {S:"安全储蓄", R:"理性规划", Q:"品质体验", E:"情绪悦己"};
+const colors = {S:"#ef6d75", R:"#a9d8c3", Q:"#e9b96e", E:"#d9c7f4"};
+
+let current = 0;
+let answers = Array(questions.length).fill(null);
+const $ = id => document.getElementById(id);
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(el => el.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function renderQuestion() {
+  const item = questions[current];
+  $("progressText").textContent = `${String(current + 1).padStart(2,"0")} / ${questions.length}`;
+  $("progressBar").style.width = `${((current + 1) / questions.length) * 100}%`;
+  $("questionNumber").textContent = `QUESTION ${String(current + 1).padStart(2,"0")}`;
+  $("questionText").textContent = item.q;
+  $("options").innerHTML = "";
+  item.a.forEach((option, index) => {
+    const button = document.createElement("button");
+    button.className = `option${answers[current] === index ? " selected" : ""}`;
+    button.setAttribute("role", "radio");
+    button.setAttribute("aria-checked", answers[current] === index ? "true" : "false");
+    button.innerHTML = `<span class="option-key">${String.fromCharCode(65+index)}</span><span>${option[0]}</span>`;
+    button.addEventListener("click", () => selectOption(index));
+    $("options").appendChild(button);
+  });
+  $("prevButton").disabled = current === 0;
+  $("nextButton").disabled = answers[current] === null;
+  $("nextButton").textContent = current === questions.length - 1 ? "提交测试 →" : "下一题 →";
+}
+
+function selectOption(index) {
+  answers[current] = index;
+  renderQuestion();
+  if (current < questions.length - 1) {
+    window.setTimeout(() => { current++; renderQuestion(); }, 260);
+  }
+}
+
+function calculateScores() {
+  const scores = {S:0,R:0,Q:0,E:0};
+  answers.forEach((answer, questionIndex) => {
+    const weights = questions[questionIndex].a[answer][1];
+    Object.entries(weights).forEach(([key,value]) => scores[key] += value);
+  });
+  return scores;
+}
+
+function renderResult() {
+  const scores = calculateScores();
+  const ranking = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  const [first, second] = ranking;
+  const isHybrid = first[1] - second[1] <= 3 || first[1] / 80 < .27;
+  const profile = profiles[first[0]];
+  const hybridKey = [first[0],second[0]].sort().join("");
+  const resultProfile = isHybrid ? hybridProfiles[hybridKey] : profile;
+  const displayName = resultProfile.name;
+  const topPercent = Math.round(first[1] / 80 * 100);
+
+  $("resultTitle").textContent = displayName;
+  $("resultSubtitle").textContent = isHybrid
+    ? `${resultProfile.subtitle} 你的核心是${labels[first[0]]}，辅助倾向是${labels[second[0]]}。`
+    : resultProfile.subtitle;
+  $("resultDescription").textContent = resultProfile.description;
+  $("resultStrength").textContent = resultProfile.strength;
+  $("resultRisk").textContent = resultProfile.risk;
+  $("resultAdvice").textContent = resultProfile.advice;
+  $("topPercent").textContent = `${topPercent}%`;
+
+  let start = 0;
+  const stops = dimensionOrder.map(key => {
+    const end = start + scores[key] / 80 * 100;
+    const stop = `${colors[key]} ${start}% ${end}%`;
+    start = end;
+    return stop;
+  });
+  $("donutChart").style.background = `conic-gradient(${stops.join(",")})`;
+  $("scoreLegend").innerHTML = dimensionOrder.map(key => `
+    <div class="legend-row"><span class="legend-dot" style="background:${colors[key]}"></span><span>${labels[key]}</span><strong>${Math.round(scores[key]/80*100)}%</strong></div>
+  `).join("");
+  showScreen("resultScreen");
+  window.__latestResult = {displayName, scores, primary:labels[first[0]], secondary:labels[second[0]]};
+}
+
+$("startButton").addEventListener("click", () => { current = 0; answers.fill(null); renderQuestion(); showScreen("quizScreen"); });
+$("closeButton").addEventListener("click", () => showScreen("startScreen"));
+$("prevButton").addEventListener("click", () => { if (current > 0) { current--; renderQuestion(); } });
+$("nextButton").addEventListener("click", () => {
+  if (answers[current] === null) return;
+  if (current === questions.length - 1) renderResult();
+  else { current++; renderQuestion(); }
+});
+$("restartButton").addEventListener("click", () => { current = 0; answers.fill(null); renderQuestion(); showScreen("quizScreen"); });
+$("shareButton").addEventListener("click", async () => {
+  const r = window.__latestResult;
+  const text = `我的消费人格是「${r.displayName}」！主要倾向：${r.primary}，辅助倾向：${r.secondary}。你是哪一种？`;
+  try { await navigator.clipboard.writeText(text); }
+  catch { const area = document.createElement("textarea"); area.value = text; document.body.appendChild(area); area.select(); document.execCommand("copy"); area.remove(); }
+  $("toast").classList.add("show");
+  setTimeout(() => $("toast").classList.remove("show"), 1800);
+});
+
+</script>
+</body>
+</html>
+
+
